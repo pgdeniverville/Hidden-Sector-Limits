@@ -100,11 +100,15 @@ def sigma_annihilation_dm(kappa,alphap,mv,mx):
 def gen_relic_dm(mv,mx,alpha_p):
     g=lambda kappa: sigma_annihilation_dm(kappa,alpha_p,mv,mx)*conversion-relic_density_sigma
     try:
-        return brentq(g,0,1)
+        return brentq(g,0,10)
     except ValueError:
-        print(mv," ",mx," ",sigma_annihilation_dm(1e-3,alpha_p,mv,mx))
-        return 1
+        print("Value error encountered for mv,mx,sigma_ann",mv,mx,sigma_annihilation_dm(1e-3,alpha_p,mv,mx))
+        return 1000
 
+#This is much faster, but could be tripped up if sigma_annihilation_dm does not
+#scale as kappa**2.
+def gen_relic_dm_fast(mv,mx,alpha_p):
+    return math.sqrt(relic_density_sigma/(sigma_annihilation_dm(1,alpha_p,mv,mx)*conversion))
 
 
 #Muon and Electron g-2

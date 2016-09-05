@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 from Hidden_Sec_Utilities import *
 from Hidden_Sec_Physics import *
 
@@ -17,9 +19,9 @@ def k4al(mv,mx,alpha_p,kappa):
 #Takes an array of masses mass_arr and generates some experimental limits for kinetically mixed hidden sector dark matter. These limits are written to text files.
 def table_of_limits(mass_arr,alpha_p=_alpha_p_set,run_name="",fill_val=1000,func=k4al):
 	
-	#Relic Density
+	#Relic Density, using the fast option.
 	print("Generating epsilons to reproduce relic density")
-	relic_tab=[k4al(mv,mx,alpha_p,gen_relic_dm(mv,mx,alpha_p)) for mv,mx in mass_arr]
+	relic_tab=[k4al(mv,mx,alpha_p,gen_relic_dm_fast(mv,mx,alpha_p)) for mv,mx in mass_arr]
 	
 	#Best limits of muon and electron g-2
 	print("Generating g-2 epsilon limits")
