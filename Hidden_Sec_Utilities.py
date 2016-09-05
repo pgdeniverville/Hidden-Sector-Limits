@@ -1,3 +1,15 @@
+import os
+import errno
+
+#From http://stackoverflow.com/questions/273192/how-to-check-if-a-directory-exists-and-create-it-if-necessary
+def make_sure_path_exists(path):
+    try:
+        os.makedirs(path)
+    except OSError as exception:
+        if exception.errno != errno.EEXIST:
+            raise
+
+
 #Checks that a string is actually a number.
 def is_number(s):
     try:
