@@ -110,8 +110,9 @@ def gen_relic_dm(mv,mx,alpha_p):
 def gen_relic_dm_fast(mv,mx,alpha_p):
     return math.sqrt(relic_density_sigma/(sigma_annihilation_dm(1,alpha_p,mv,mx)*conversion))
 
-
-#Muon and Electron g-2
+#######################
+#Muon and Electron g-2#
+#######################
 def al_int(z,mv,ml):
     return 2*ml**2*z*(1-z)**2/(ml**2*(1-z)**2+mv**2*z)
 def al(mv,mlepton):
@@ -129,3 +130,109 @@ def kappa_electron_lim(mv):
     g=lambda kappa: Delta_a_electron(mv,kappa)-(-1.06+2*0.82)*1e-12
     return brentq(g,0,1)
 
+
+
+
+#Direct Detection Limits will go here. Eventually.
+
+
+
+################
+#Monojet Limits#
+################
+
+#From aritz e-mail 2012. Should find a citation for this.
+def monojet_limit():
+    return 0.02/math.sqrt(4*math.pi*alpha_em)
+#1112.5457
+def monojet_limit_baryonic():
+    return 9*0.021**2/(4*math.pi)
+
+
+##########################
+#K^+ --> pi^+ + invisible#
+##########################
+
+#Formulae from 0808.2459 and data from E949 0903.0030
+kpip_invis_dat_1 = np.loadtxt("data/kpipinvis1.dat")
+kpip_invis_dat_2 = np.loadtxt("data/kpipinvis2.dat")
+def W2(mv):
+    return 1e-12*(3+6*mv**2/mkaon**2)
+def Gamma_K_Vpi(mv,kappa):
+    return alpha_em*kappa**2*mv**2*W2(mv)*4*lambda_m(mkaon,mpip,mv)**3/(2**9*math.pi**4*mkaon**4)
+def Br_K_Vpi(mv,kappa):
+    return Gamma_K_Vpi(mv,kappa)*tauK/hbar
+def gen_K_Vpi_lim(arr):
+    return np.array([[mv, math.sqrt(kdat/Br_K_Vpi(mv,1))] for mv,kdat in arr])
+
+#Baryonic
+def Br_K_VpiB(mv,alpha_B):
+    return 1.4e-3*alpha_B*(mv/0.1)**2
+def gen_K_VpiB_lim(arr):
+    return np.array([[mv, kdat/Br_K_VpiB(mv,1)] for mv,kdat in arr])
+def gen_K_VpiB_lim_conservative(arr):
+    return np.array([[mv, 10*kdat/Br_K_VpiB(mv,1)] for mv,kdat in arr])
+
+
+########################
+#Electroweak Fit limits#
+########################
+
+#Model Independent Bounds on Kinetic Mixing - Anson Hook, Eder Izaguirre, Jay G.Wacker. 1006.0973
+zprimedat=np.loadtxt("data/zprime.dat")
+
+############
+#Babar line#
+############
+
+#Possible sensitivity from repurposed analysis of http://arxiv.org/abs/arXiv:0808.0017
+
+babar_dat=np.loadtxt("data/babar.dat")
+babar_interp = interp1d(babar_dat[:,0],babar_dat[:,1])
+
+
+# In[23]:
+
+def babar_func(mv,mx,alpha_p):
+    if mv < 0.2:
+        term = babar_interp(0.2)
+    else:
+        term = babar_interp(mv)
+    if 2*mx>mv:
+        term = 1.0/sqrt(alpha_p)*term
+    return term
+
+
+#############################
+#Baryonic Neutron Scattering#
+#############################
+
+def neutron_scatter(mv):
+    return 3.4e-11*(mv/0.001)**4
+
+#########################
+#Limits from rare decays#
+#########################
+#Rare Decay Limits
+def Br_Jpsi_to_V(mv,mx,alpha_p,kappa):
+    return Brj_psi_to_ee*kappa**2*alpha_p/(4*alpha_em)*mj_psi**4/((mj_psi**2-mv**2)**2+mv**2*GammaV(alpha_p,kappa,mv,mx)**2)
+def rarelimit(mv,mx,alpha_p):
+    g= lambda kappa: Br_Jpsi_to_V(mv,mx,alpha_p,kappa) - Brj_psi_to_invis
+    return brentq(g,0,1)
+#Baryonic
+def Br_Jpsi_to_VB(mv,mx,alpha_B,kappa):
+    return Brj_psi_to_ee/9.0*alpha_B**2/(4*alpha_em**2)*mj_psi**4/((mj_psi**2-mv**2)**2+mv**2*GammaVB(alpha_B,kappa,mv,mx)**2)
+def rarelimitB(mv,mx,kappa):
+    if mv == mj_psi:
+        return 0
+    g= lambda alpha_B: (Br_Jpsi_to_VB(mv,mx,alpha_B,kappa) - Brj_psi_to_invis)
+    return brentq(g,0,1)
+
+#######################
+#Invisible Pion Limits#
+#######################
+
+#http://inspirehep.net/record/333625?ln=en, Atiya 1992
+invispiondat = np.loadtxt("data/invis_pion.dat")
+#Note, this curve has kappa dependence. It is currently assuming kappa=0
+invispionbaryonicdat = np.loadtxt("data/invis_pion_baryonic.dat")
