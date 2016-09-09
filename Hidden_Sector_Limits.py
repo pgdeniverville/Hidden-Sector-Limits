@@ -24,39 +24,47 @@ def table_of_limits(mass_arr,alpha_p=_alpha_p_set,run_name="",fill_val=1000,func
 	
 	#Relic Density, using the fast option.
 	print("Generating epsilons to reproduce relic density")
-	relic_tab=[k4al(mv,mx,alpha_p,gen_relic_dm_fast(mv,mx,alpha_p)) for mv,mx in mass_arr]
+	relic_tab=[func(mv,mx,alpha_p,gen_relic_dm_fast(mv,mx,alpha_p)) for mv,mx in mass_arr]
 	
 	#Best limits of muon and electron g-2
 	print("Generating g-2 epsilon limits")
-	g_minus_2_tab = [k4al(mv,mx,alpha_p,min(kappa_muon_lim(mv),kappa_electron_lim(mv))) for mv,mx in  mass_arr]
+	g_minus_2_tab = [func(mv,mx,alpha_p,min(kappa_muon_lim(mv),kappa_electron_lim(mv))) for mv,mx in  mass_arr]
 	print("Generating g-2 epsilon favoured region")
-	g_muon_fav_low_tab = [k4al(mv,mx,alpha_p,kappa_fav_low(mv)) for mv,mx in mass_arr]
-	g_muon_fav_high_tab = [k4al(mv,mx,alpha_p,kappa_fav_high(mv)) for mv,mx in mass_arr]
+	g_muon_fav_low_tab = [func(mv,mx,alpha_p,kappa_fav_low(mv)) for mv,mx in mass_arr]
+	g_muon_fav_high_tab = [func(mv,mx,alpha_p,kappa_fav_high(mv)) for mv,mx in mass_arr]
 
 	print("Generating BaBar limits")
-	babar_tab=[k4al(mv,mx,alpha_p,babar_func(mv,mx,alpha_p)) for mv,mx in mass_arr]
+	babar_tab=[func(mv,mx,alpha_p,babar_func(mv,mx,alpha_p)) for mv,mx in mass_arr]
 
 	print("Generating limits from rare decays (J\Psi->V)")
-	rare_tab = [k4al(mv,mx,alpha_p,rarelimit(mv,mx,alpha_p)) for mv,mx in mass_arr]
+	rare_tab = [func(mv,mx,alpha_p,rarelimit(mv,mx,alpha_p)) for mv,mx in mass_arr]
 
 	print("Generating Monojet limits")
-	monojet_tab = [k4al(mv,mx,alpha_p,monojet_limit()) for mv,mx in mass_arr]
+	monojet_tab = [func(mv,mx,alpha_p,monojet_limit()) for mv,mx in mass_arr]
 
 	print("Generating rare kaon decay limits (K->pi+V)")
 	K_Vpi_tab1=gen_K_Vpi_lim(kpip_invis_dat_1)
 	K_Vpi_func_1=interp1d(K_Vpi_tab1[:,0],K_Vpi_tab1[:,1],bounds_error=False,fill_value=fill_val)
 	K_Vpi_tab2=gen_K_Vpi_lim(kpip_invis_dat_2)
 	K_Vpi_func_2=interp1d(K_Vpi_tab2[:,0],K_Vpi_tab2[:,1],bounds_error=False,fill_value=fill_val)
-	k_Vpi_tab = [k4al(mv,mx,alpha_p,min(K_Vpi_func_1(mv),K_Vpi_func_2(mv))) for mv,mx in  mass_arr]
+	k_Vpi_tab = [func(mv,mx,alpha_p,min(K_Vpi_func_1(mv),K_Vpi_func_2(mv))) for mv,mx in  mass_arr]
 
 	print("Generating pion->invisible limits")
 	invispion_func=interp1d(invispiondat[:,0],invispiondat[:,1],bounds_error=False,fill_value=fill_val)
-	invispion_tab=[k4al(mv,mx,alpha_p,invispion_func(mv)) for mv,mx in mass_arr]
+	invispion_tab=[func(mv,mx,alpha_p,invispion_func(mv)) for mv,mx in mass_arr]
 
 	#Electroweak/shift in Z mass etc.
 	print("Generating Electroweak fit limits")
 	zprime_func=interp1d(zprimedat[:,0],zprimedat[:,1],bounds_error=False,fill_value=fill_val)
-	zprime_tab = [k4al(mv,mx,alpha_p,zprime_func(mv)) for mv,mx in mass_arr]
+	zprime_tab = [func(mv,mx,alpha_p,zprime_func(mv)) for mv,mx in mass_arr]
+
+	#E137
+	print("Generating E137 limits")
+	E137_tab = [func(mv,mx,alpha_p,(E137func(mv,mx)/alpha_p)**-4) for mv,mx in mass_arr]
+
+	#LSND
+	print("Generating LSND limits")
+	LSND_tab = [func(mv,mx,alpha_p,(LSNDfunc(mv,mx)/alpha_p)**-4) for mv,mx in mass_arr]
 
 	np.savetxt(run_name+"relic_density.dat",relic_tab)
 	np.savetxt(run_name+"precision_g_minus_2.dat",g_minus_2_tab)
@@ -70,11 +78,12 @@ def table_of_limits(mass_arr,alpha_p=_alpha_p_set,run_name="",fill_val=1000,func
 	np.savetxt(run_name+"kpipinvisk.dat",k_Vpi_tab)
 	np.savetxt(run_name+"invispion.dat",invispion_tab)
 	np.savetxt(run_name+"zprime.dat",zprime_tab)
+	np.savetxt(run_name+"lsndlim.dat",LSND_tab)
+	np.savetxt(run_name+"e137lim.dat",E137_tab)
 
 
 #Make an array of masses!
 marr=[[mv/1000.0,mx/1000.0] for mv in range(10,1000) for mx in range(1,mv/2,1)]
-
 #marr=[[mv/1000.0,mx/1000.0] for mv in range(10,100) for mx in range(1,mv/2,1)]
 
 
