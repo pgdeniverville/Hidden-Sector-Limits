@@ -8,7 +8,7 @@ import itertools
 """
 I use kappa and epsilon interchangeably. They mean the same thing.
 Many of these limits are not valid in the off-shell regime, or
-change dramatically! Use at your own risk!
+change dramatically. Use at your own risk!
 """
 
 #Default value of alpha_p to use
@@ -21,7 +21,8 @@ def k4al(mv,mx,alpha_p,kappa):
 #Takes an array of masses mass_arr and generates some experimental limits for kinetically mixed hidden sector dark matter. These limits are written to text files. 
 #func can be any function that accepts arguments in the form (mv,mx,alpha_p,kappa).
 def table_of_limits(mass_arr,alpha_p=_alpha_p_set,run_name="",fill_val=1000,func=k4al):
-	
+	mass_arr = np.array(mass_arr)
+
 	#Relic Density, using the fast option.
 	print("Generating epsilons to reproduce relic density")
 	relic_tab=[func(mv,mx,alpha_p,gen_relic_dm_fast(mv,mx,alpha_p)) for mv,mx in mass_arr]
@@ -59,12 +60,18 @@ def table_of_limits(mass_arr,alpha_p=_alpha_p_set,run_name="",fill_val=1000,func
 	zprime_tab = [func(mv,mx,alpha_p,zprime_func(mv)) for mv,mx in mass_arr]
 
 	#E137
-	print("Generating E137 limits")
-	E137_tab = [func(mv,mx,alpha_p,(E137func(mv,mx)/alpha_p)**-4) for mv,mx in mass_arr]
+	print("Generating E137 limits - Note that this currently does not use the supplied func, as odd c runtime errors are encountered. Uncomment the following commented lines if another function is required, but test carefully!")
+	e137dat=griddata(E137tab[:,0:2],E137tab[:,2],mass_arr,fill_value=fill_val,method='linear')
+	#e137_vals= np.array([func(mv,mx,alpha_p,(k4alphap/alpha_p)**0.25) for mv,mx,k4alphap in E137tab])
+	#e137dat = griddata(E137tab[:,0:2],e137_vals[:,2],mass_arr,fill_value=fill_val,method='linear')
+
+	E137_tab = zip(mass_arr[:,0],mass_arr[:,1],e137dat)
 
 	#LSND
 	print("Generating LSND limits")
-	LSND_tab = [func(mv,mx,alpha_p,(LSNDfunc(mv,mx)/alpha_p)**-4) for mv,mx in mass_arr]
+	lsnd_vals= np.array([func(mv,mx,alpha_p,(k4alphap/alpha_p)**0.25) for mv,mx,k4alphap in LSNDtab])
+	LSNDdat = griddata(LSNDtab[:,0:2],lsnd_vals[:,2],mass_arr,fill_value=fill_val,method='linear')
+	LSND_tab = zip(mass_arr[:,0],mass_arr[:,1],LSNDdat)
 
 	np.savetxt(run_name+"relic_density.dat",relic_tab)
 	np.savetxt(run_name+"precision_g_minus_2.dat",g_minus_2_tab)

@@ -5,6 +5,7 @@ from scipy.interpolate import interp1d
 from scipy.interpolate import SmoothBivariateSpline
 from scipy.optimize import brentq
 from scipy.integrate import quad
+from scipy.interpolate import griddata
 #import matplotlib.pyplot as plt
 
 from Hidden_Sec_Utilities import *
@@ -244,11 +245,9 @@ invispionbaryonicdat = np.loadtxt("data/invis_pion_baryonic.dat")
 #E137 has to be handled separately. These limits are provided by Brian
 #Batell. See https://arxiv.org/abs/1406.2698.
 E137tab = np.loadtxt("data/E137-kappa4XalphaD-mV-mX.csv",delimiter=',')
-E137func = SmoothBivariateSpline(E137tab[:,0],E137tab[:,1],E137tab[:,2])
 
 ######
 #LSND#
 ######
 #See arXiv:1107.4580 and arXiv:1411.1055.
 LSNDtab = np.loadtxt("data/lsnd.dat",delimiter='\t')
-LSNDfunc = SmoothBivariateSpline(LSNDtab[:,0],LSNDtab[:,1],LSNDtab[:,2])
