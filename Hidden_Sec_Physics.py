@@ -200,7 +200,7 @@ def babar_func(mv,mx,alpha_p):
     else:
         term = babar_interp(mv)
     if 2*mx>mv:
-        term = 1.0/sqrt(alpha_p)*term
+        term = 1.0/math.sqrt(alpha_p)*term
     return term
 
 

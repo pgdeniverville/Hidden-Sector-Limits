@@ -18,6 +18,9 @@ _alpha_p_set = 0.1
 def k4al(mv,mx,alpha_p,kappa):
 	return [mv,mx,kappa**4*alpha_p]
 
+def kappa(mv,mx,alpha_p,kappa):
+	return [mv,mx,kappa]
+
 #Takes an array of masses mass_arr and generates some experimental limits for kinetically mixed hidden sector dark matter. These limits are written to text files. 
 #func can be any function that accepts arguments in the form (mv,mx,alpha_p,kappa).
 def table_of_limits(mass_arr,alpha_p=_alpha_p_set,run_name="",fill_val=1000,func=k4al):
@@ -30,6 +33,8 @@ def table_of_limits(mass_arr,alpha_p=_alpha_p_set,run_name="",fill_val=1000,func
 	#Best limits of muon and electron g-2
 	print("Generating g-2 epsilon limits")
 	g_minus_2_tab = [func(mv,mx,alpha_p,min(kappa_muon_lim(mv),kappa_electron_lim(mv))) for mv,mx in  mass_arr]
+	g_minus_2_electron = [func(mv,mx,alpha_p,kappa_electron_lim(mv)) for mv,mx in  mass_arr]
+	g_minus_2_muon = [func(mv,mx,alpha_p,kappa_muon_lim(mv)) for mv,mx in  mass_arr]
 	print("Generating g-2 epsilon favoured region")
 	g_muon_fav_low_tab = [func(mv,mx,alpha_p,kappa_fav_low(mv)) for mv,mx in mass_arr]
 	g_muon_fav_high_tab = [func(mv,mx,alpha_p,kappa_fav_high(mv)) for mv,mx in mass_arr]
@@ -75,6 +80,8 @@ def table_of_limits(mass_arr,alpha_p=_alpha_p_set,run_name="",fill_val=1000,func
 
 	np.savetxt(run_name+"relic_density.dat",relic_tab)
 	np.savetxt(run_name+"precision_g_minus_2.dat",g_minus_2_tab)
+	np.savetxt(run_name+"precision_g_minus_2_electron.dat",g_minus_2_electron_tab)
+	np.savetxt(run_name+"precision_g_minus_2_muon.dat",g_minus_2_muon_tab)
 	np.savetxt(run_name+"precision_g_minus_2_fav_low.dat",g_muon_fav_low_tab)
 	np.savetxt(run_name+"precision_g_minus_2_fav_high.dat",g_muon_fav_high_tab)
 	#np.savetxt(run_name+"direct_det.dat",direct_det_tab)
@@ -93,6 +100,7 @@ def table_of_limits(mass_arr,alpha_p=_alpha_p_set,run_name="",fill_val=1000,func
 marr=[[mv/1000.0,mx/1000.0] for mv in range(10,1000) for mx in range(1,mv/2,1)]
 #marr=[[mv/1000.0,mx/1000.0] for mv in range(10,100) for mx in range(1,mv/2,1)]
 
+#marr=[[3*mx/1000.0,mx/1000.0] for mx in range(1,1000)]
 
 make_sure_path_exists("output/")
 
