@@ -266,3 +266,33 @@ E137tab = np.loadtxt("data/E137-kappa4XalphaD-mV-mX.csv",delimiter=',')
 ######
 #See arXiv:1107.4580 and arXiv:1411.1055.
 LSNDtab = np.loadtxt("data/lsnd.dat",delimiter='\t')
+
+#Direct_Detection_Limits
+#1105.5191
+xenon10_dat = np.loadtxt("data/xenon10.dat")
+#1207.5988
+xenon100_dat1 = np.loadtxt("data/xenon100_1.dat")
+xenon100_dat2 = np.loadtxt("data/xenon100_2.dat")
+#1105.5191
+damic_dat=np.loadtxt("data/damic.dat")
+#arXiv:1509.01515
+cressII2015_dat_unscaled = np.loadtxt("data/cressII2015.dat")
+cressII2015_dat = zip(cressII2015_dat_unscaled[:,0],cressII2015_dat_unscaled[:,1]*1e-36)
+#arXiv:1402.7137
+with open("data/SuperCDMS.dat") as infile:
+    scdms1=infile.read()
+    scdms2=[line.split() for line in scdms1.split(';')]
+    SuperCDMS_dat=[[float(x),float(y)] for x,y in scdms2]
+#arXiv:1509.02448
+CDMSlite_dat = np.loadtxt("data/cdmslite2015.dat")
+#1512.03506
+LUX_dat_unscaled = np.loadtxt("data/lux2015.dat")
+LUX_dat = zip(LUX_dat_unscaled[:,0],LUX_dat_unscaled[:,1]*1e-45)
+Direct_Det_Tab =[xenon10_dat,xenon100_dat1,xenon100_dat2,damic_dat,cressII2015_dat,SuperCDMS_dat,CDMSlite_dat,LUX_dat]
+
+Direct_Det_Func=[interp1d(np.array(tab)[:,0],np.array(tab)[:,1],bounds_error=False,fill_value=1e-25) for tab in Direct_Det_Tab]
+
+def Direct_Det(mx):
+    return min([func(mx) for func in Direct_Det_Func])
+
+

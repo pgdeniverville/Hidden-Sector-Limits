@@ -71,6 +71,11 @@ def table_of_limits(mass_arr,alpha_p=_alpha_p_set,run_name="",fill_val=1000,func
 	LSNDdat = griddata(LSNDtab[:,0:2],lsnd_vals[:,2],mass_arr,fill_value=fill_val,method='linear')
 	LSND_tab = zip(mass_arr[:,0],mass_arr[:,1],LSNDdat)
 
+        print("Generating limits from Direct Detection")
+	direct_det_tab = [func(mv,mx,alpha_p,sigman_to_kappa(Direct_Det(mx),mv,mx,alpha_p)) for mv,mx in mass_arr]
+        
+
+
 	np.savetxt(run_name+"relic_density.dat",relic_tab)
 	np.savetxt(run_name+"precision_g_minus_2.dat",g_minus_2_tab)
 	np.savetxt(run_name+"precision_g_minus_2_electron.dat",g_minus_2_electron_tab)
@@ -87,6 +92,7 @@ def table_of_limits(mass_arr,alpha_p=_alpha_p_set,run_name="",fill_val=1000,func
 	np.savetxt(run_name+"zprime.dat",zprime_tab)
 	np.savetxt(run_name+"lsndlim.dat",LSND_tab)
 	np.savetxt(run_name+"e137lim.dat",E137_tab)
+	np.savetxt(run_name+"direct_det.dat",direct_det_tab)
 
 
 #Make an array of masses!
