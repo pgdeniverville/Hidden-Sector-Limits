@@ -14,13 +14,6 @@ change dramatically. Use at your own risk!
 #Default value of alpha_p to use
 _alpha_p_set = 0.1
 
-#Returns an array of the V mass, DM mass and kappa^4*alpha_p
-def k4al(mv,mx,alpha_p,kappa):
-	return [mv,mx,kappa**4*alpha_p]
-
-def kappa(mv,mx,alpha_p,kappa):
-	return [mv,mx,kappa]
-
 #Takes an array of masses mass_arr and generates some experimental limits for kinetically mixed hidden sector dark matter. These limits are written to text files. 
 #func can be any function that accepts arguments in the form (mv,mx,alpha_p,kappa).
 def table_of_limits(mass_arr,alpha_p=_alpha_p_set,run_name="",fill_val=1000,func=k4al):

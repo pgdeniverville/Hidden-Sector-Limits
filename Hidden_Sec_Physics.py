@@ -23,6 +23,20 @@ hbar=float(1.054*1e-34/(1.6e-19)/(1e9));speed_of_light=3e8;conversion=hbar**2*sp
 #Relid density cross section for rough estimates of relic density
 relic_density_sigma=1e-40
 
+
+#Functions for returning arrays of V mass, DM mass and some function f(mv,mx,alpha_p,kappa)
+#Returns an array of the V mass, DM mass and kappa^4*alpha_p
+def k4al(mv,mx,alpha_p,kappa):
+    return [mv,mx,kappa**4*alpha_p]
+
+def kappa(mv,mx,alpha_p,kappa):
+    return [mv,mx,kappa]
+
+def Y_func(mv,mx,alpha_p,kappa):
+    return [mv,mx]
+
+
+
 #Reduced Mass
 def reduced_mass(m1,m2):
     return m1*m2/(m1+m2)
@@ -187,6 +201,7 @@ zprimedat=np.loadtxt("data/zprime.dat")
 ############
 
 #Possible sensitivity from repurposed analysis of http://arxiv.org/abs/arXiv:0808.0017
+#Full analysis in http://arxiv.org/pdf/1309.5084v2.pdf
 
 babar_dat=np.loadtxt("data/babar.dat")
 babar_interp = interp1d(babar_dat[:,0],babar_dat[:,1])
