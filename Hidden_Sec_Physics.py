@@ -33,9 +33,10 @@ def kappa(mv,mx,alpha_p,kappa):
     return [mv,mx,kappa]
 
 def Y_func(mv,mx,alpha_p,kappa):
-    return [mv,mx]
+    return [mv,mx,kappa**2*alpha_p*(mx/mv)**4]
 
-
+def alphab(mv,mx,alpha_b,kappa):
+    return [mv,mx,alpha_b]
 
 #Reduced Mass
 def reduced_mass(m1,m2):
