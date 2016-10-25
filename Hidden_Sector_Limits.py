@@ -26,8 +26,8 @@ def table_of_limits(mass_arr,alpha_p=_alpha_p_set,run_name="",fill_val=1000,func
 	#Best limits of muon and electron g-2
 	print("Generating g-2 epsilon limits")
 	g_minus_2_tab = [func(mv,mx,alpha_p,min(kappa_muon_lim(mv),kappa_electron_lim(mv))) for mv,mx in  mass_arr]
-	g_minus_2_electron = [func(mv,mx,alpha_p,kappa_electron_lim(mv)) for mv,mx in  mass_arr]
-	g_minus_2_muon = [func(mv,mx,alpha_p,kappa_muon_lim(mv)) for mv,mx in  mass_arr]
+	g_minus_2_electron_tab = [func(mv,mx,alpha_p,kappa_electron_lim(mv)) for mv,mx in  mass_arr]
+	g_minus_2_muon_tab = [func(mv,mx,alpha_p,kappa_muon_lim(mv)) for mv,mx in  mass_arr]
 	print("Generating g-2 epsilon favoured region")
 	g_muon_fav_low_tab = [func(mv,mx,alpha_p,kappa_fav_low(mv)) for mv,mx in mass_arr]
 	g_muon_fav_high_tab = [func(mv,mx,alpha_p,kappa_fav_high(mv)) for mv,mx in mass_arr]
@@ -51,6 +51,12 @@ def table_of_limits(mass_arr,alpha_p=_alpha_p_set,run_name="",fill_val=1000,func
 	print("Generating pion->invisible limits")
 	invispion_func=interp1d(invispiondat[:,0],invispiondat[:,1],bounds_error=False,fill_value=fill_val)
 	invispion_tab=[func(mv,mx,alpha_p,invispion_func(mv)) for mv,mx in mass_arr]
+
+
+        print("Generating NA64 limits")
+        NA64_func=interp1d(NA64dat[:,0],NA64dat[:,1],bounds_error=False,fill_value=fill_val)
+	NA64_tab=[func(mv,mx,alpha_p,NA64_func(mv)) for mv,mx in mass_arr]
+
 
 	#Electroweak/shift in Z mass etc.
 	print("Generating Electroweak fit limits")
@@ -93,13 +99,13 @@ def table_of_limits(mass_arr,alpha_p=_alpha_p_set,run_name="",fill_val=1000,func
 	np.savetxt(run_name+"lsndlim.dat",LSND_tab)
 	np.savetxt(run_name+"e137lim.dat",E137_tab)
 	np.savetxt(run_name+"direct_det.dat",direct_det_tab)
-
+	np.savetxt(run_name+"NA64.dat",NA64_tab)
 
 #Make an array of masses!
-marr=[[mv/1000.0,mx/1000.0] for mv in range(10,1000) for mx in range(1,mv/2,1)]
+#marr=[[mv/1000.0,mx/1000.0] for mv in range(10,1000) for mx in range(1,mv/2,1)]
 #marr=[[mv/1000.0,mx/1000.0] for mv in range(10,100) for mx in range(1,mv/2,1)]
 
-#marr=[[3*mx/1000.0,mx/1000.0] for mx in range(1,1000)]
+marr=[[3*mx/1000.0,mx/1000.0] for mx in range(1,1000)]
 
 make_sure_path_exists("output/")
 
