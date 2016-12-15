@@ -29,7 +29,7 @@ def table_of_limits_baryonic(mass_arr,kappa=_kappa,run_name="",fill_val=1000,fun
     K_Vpi_func_1=interp1d(K_Vpi_tab1[:,0],K_Vpi_tab1[:,1],bounds_error=False,fill_value=fill_val)
     K_Vpi_tab2=gen_K_VpiB_lim(kpip_invis_dat_2)
     K_Vpi_func_2=interp1d(K_Vpi_tab2[:,0],K_Vpi_tab2[:,1],bounds_error=False,fill_value=fill_val)
-    k_Vpi_tab = [func(mv,mx,min(K_Vpi_func_1(mv),K_Vpi_func_2(mv)),kappa) for mv,mx in  mass_arr]     
+    k_Vpi_tab = [func(mv,mx,min(K_Vpi_func_1(mv),K_Vpi_func_2(mv)),kappa) for mv,mx in  mass_arr]
 
     print("Generating limits from monojet")
     monojet_tab = [func(mv,mx,monojet_limit_baryonic(),kappa) for mv,mx in mass_arr]
@@ -49,5 +49,10 @@ marr=[[3*mx/1000.0,mx/1000.0] for mx in range(1,1000)]
 
 make_sure_path_exists("output/")
 
-table_of_limits_baryonic(marr,run_name="output/")
+table_of_limits_baryonic(marr,run_name="output/bar3_")
+
+mxset=0.01
+runname="output/barmx"+masstext(mxset)+"_"
+marr2=[[mv/1000.0,mxset] for mv in range(mx,4000)]
+table_of_limits_baryonic(marr,run_name=runname)
 

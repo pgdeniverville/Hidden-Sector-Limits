@@ -16,12 +16,12 @@ def is_number(s):
         float(s)
         return True
     except ValueError:
-        return False 
+        return False
 
 #Generate a string from a mass. Only set up for MeV and GeV right now.
 def masstext(m):
     mstr=""
-    if m>=gev:
+    if m>=1.0:
         if m==1.0 or m==2.0:
             mstr=mstr+str(int(m))
         else:

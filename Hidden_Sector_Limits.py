@@ -14,7 +14,7 @@ change dramatically. Use at your own risk!
 #Default value of alpha_p to use
 _alpha_p_set = 0.1
 
-#Takes an array of masses mass_arr and generates some experimental limits for kinetically mixed hidden sector dark matter. These limits are written to text files. 
+#Takes an array of masses mass_arr and generates some experimental limits for kinetically mixed hidden sector dark matter. These limits are written to text files.
 #func can be any function that accepts arguments in the form (mv,mx,alpha_p,kappa).
 def table_of_limits(mass_arr,alpha_p=_alpha_p_set,run_name="",fill_val=1000,func=k4al):
 	mass_arr = np.array(mass_arr)
@@ -22,7 +22,7 @@ def table_of_limits(mass_arr,alpha_p=_alpha_p_set,run_name="",fill_val=1000,func
 	#Relic Density, using the fast option.
 	print("Generating epsilons to reproduce relic density")
 	relic_tab=[func(mv,mx,alpha_p,gen_relic_dm_fast(mv,mx,alpha_p)) for mv,mx in mass_arr]
-	
+
 	#Best limits of muon and electron g-2
 	print("Generating g-2 epsilon limits")
 	g_minus_2_tab = [func(mv,mx,alpha_p,min(kappa_muon_lim(mv),kappa_electron_lim(mv))) for mv,mx in  mass_arr]
@@ -73,13 +73,13 @@ def table_of_limits(mass_arr,alpha_p=_alpha_p_set,run_name="",fill_val=1000,func
 
         print("Generating limits from Direct Detection")
 	direct_det_tab = [func(mv,mx,alpha_p,sigman_to_kappa(Direct_Det(mx),mv,mx,alpha_p)) for mv,mx in mass_arr]
-        
+
 
 
 	np.savetxt(run_name+"relic_density.dat",relic_tab)
 	np.savetxt(run_name+"precision_g_minus_2.dat",g_minus_2_tab)
-	np.savetxt(run_name+"precision_g_minus_2_electron.dat",g_minus_2_electron_tab)
-	np.savetxt(run_name+"precision_g_minus_2_muon.dat",g_minus_2_muon_tab)
+	np.savetxt(run_name+"precision_g_minus_2_electron.dat",g_minus_2_electron)
+	np.savetxt(run_name+"precision_g_minus_2_muon.dat",g_minus_2_muon)
 	np.savetxt(run_name+"precision_g_minus_2_fav_low.dat",g_muon_fav_low_tab)
 	np.savetxt(run_name+"precision_g_minus_2_fav_high.dat",g_muon_fav_high_tab)
 	#np.savetxt(run_name+"direct_det.dat",direct_det_tab)
@@ -96,12 +96,17 @@ def table_of_limits(mass_arr,alpha_p=_alpha_p_set,run_name="",fill_val=1000,func
 
 
 #Make an array of masses!
-marr=[[mv/1000.0,mx/1000.0] for mv in range(10,1000) for mx in range(1,mv/2,1)]
+#marr=[[mv/1000.0,mx/1000.0] for mv in range(10,1000) for mx in range(1,mv/2,1)]
 #marr=[[mv/1000.0,mx/1000.0] for mv in range(10,100) for mx in range(1,mv/2,1)]
 
-#marr=[[3*mx/1000.0,mx/1000.0] for mx in range(1,1000)]
+marr=[[3*mx/1000.0,mx/1000.0] for mx in range(1,1000)]
 
 make_sure_path_exists("output/")
 
 #Masses are quite large, so this will take awhile.
-table_of_limits(marr,run_name="output/")
+table_of_limits(marr,run_name="output/y3_")
+
+mxset=0.01
+runname="output/mx"+masstext(mxset)+"_"
+marr2=[[mv/1000.0,mxset] for mv in range(mx,4000)]
+table_of_limits(marr,run_name=runname)
