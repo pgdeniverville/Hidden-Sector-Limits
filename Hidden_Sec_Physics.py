@@ -254,6 +254,12 @@ invispiondat = np.loadtxt("data/invis_pion.dat")
 #Note, this curve has kappa dependence. It is currently assuming kappa=0
 invispionbaryonicdat = np.loadtxt("data/invis_pion_baryonic.dat")
 
+######
+#NA64#
+######
+
+#https://arxiv.org/abs/1610.02988
+NA64dat = np.loadtxt("data/NA64_formatted.dat")
 
 ######
 #E137#
