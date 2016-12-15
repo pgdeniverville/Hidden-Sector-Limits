@@ -54,5 +54,5 @@ table_of_limits_baryonic(marr,run_name="output/bar3_")
 mxset=0.01
 runname="output/barmx"+masstext(mxset)+"_"
 marr2=[[mv/1000.0,mxset] for mv in range(mx,4000)]
-table_of_limits_baryonic(marr,run_name=runname)
+table_of_limits_baryonic(marr2,run_name=runname)
 
