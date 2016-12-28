@@ -12,11 +12,11 @@ change dramatically. Use at your own risk!
 """
 
 #Default value of alpha_p to use
-_alpha_p_set = 0.1
+_alpha_p_set = 0.5
 
 #Takes an array of masses mass_arr and generates some experimental limits for kinetically mixed hidden sector dark matter. These limits are written to text files.
 #func can be any function that accepts arguments in the form (mv,mx,alpha_p,kappa).
-def table_of_limits(mass_arr,alpha_p=_alpha_p_set,run_name="",fill_val=1000,func=k4al):
+def table_of_limits(mass_arr,alpha_p=_alpha_p_set,run_name="",fill_val=1000,func=Y_func):
 	mass_arr = np.array(mass_arr)
 
 	#Relic Density, using the fast option.
@@ -59,9 +59,9 @@ def table_of_limits(mass_arr,alpha_p=_alpha_p_set,run_name="",fill_val=1000,func
 
 	#E137
 	print("Generating E137 limits - Note that this currently does not use the supplied func, as odd c runtime errors are encountered. Uncomment the following commented lines if another function is required, but test carefully!")
-	e137dat=griddata(E137tab[:,0:2],E137tab[:,2],mass_arr,fill_value=fill_val,method='linear')
-	#e137_vals= np.array([func(mv,mx,alpha_p,(k4alphap/alpha_p)**0.25) for mv,mx,k4alphap in E137tab])
-	#e137dat = griddata(E137tab[:,0:2],e137_vals[:,2],mass_arr,fill_value=fill_val,method='linear')
+	#e137dat=griddata(E137tab[:,0:2],E137tab[:,2],mass_arr,fill_value=fill_val,method='linear')
+	e137_vals= np.array([func(mv,mx,alpha_p,(k4alphap/alpha_p)**0.25) for mv,mx,k4alphap in E137tab])
+	e137dat = griddata(E137tab[:,0:2],e137_vals[:,2],mass_arr,fill_value=fill_val,method='linear')
 
 	E137_tab = zip(mass_arr[:,0],mass_arr[:,1],e137dat)
 
@@ -74,7 +74,12 @@ def table_of_limits(mass_arr,alpha_p=_alpha_p_set,run_name="",fill_val=1000,func
         print("Generating limits from Direct Detection")
 	direct_det_tab = [func(mv,mx,alpha_p,sigman_to_kappa(Direct_Det(mx),mv,mx,alpha_p)) for mv,mx in mass_arr]
 
+        print("Generating limits from Direct Detection - Electron")
+        direct_det_e_tab = [func(mv,mx,alpha_p,sigmae_to_kappa(xenon10efunc(mx),mv,mx,alpha_p)) for mv,mx in mass_arr]
 
+	print("Generating NA64 limits")
+        NA64_func=interp1d(NA64dat[:,0],NA64dat[:,1],bounds_error=False,fill_value=fill_val)
+	NA64_tab=[func(mv,mx,alpha_p,NA64_func(mv)) for mv,mx in mass_arr]
 
 	np.savetxt(run_name+"relic_density.dat",relic_tab)
 	np.savetxt(run_name+"precision_g_minus_2.dat",g_minus_2_tab)
@@ -93,6 +98,8 @@ def table_of_limits(mass_arr,alpha_p=_alpha_p_set,run_name="",fill_val=1000,func
 	np.savetxt(run_name+"lsndlim.dat",LSND_tab)
 	np.savetxt(run_name+"e137lim.dat",E137_tab)
 	np.savetxt(run_name+"direct_det.dat",direct_det_tab)
+	np.savetxt(run_name+"direct_det_e.dat",direct_det_e_tab)
+	np.savetxt(run_name+"NA64.dat",NA64_tab)
 
 
 #Make an array of masses!
@@ -106,7 +113,7 @@ make_sure_path_exists("output/")
 #Masses are quite large, so this will take awhile.
 table_of_limits(marr,run_name="output/y3_")
 
-mxset=0.01
-runname="output/mx"+masstext(mxset)+"_"
-marr2=[[mv/1000.0,mxset] for mv in range(mx,4000)]
-table_of_limits(marr2,run_name=runname)
+mxset=10
+runname="output/mx"+masstext(mxset/1000.0)+"_"
+marr2=[[mv/1000.0,mxset/1000.0] for mv in range(mxset,4000)]+[[(mv-0.5)/1000.0,mxset/1000.0],[(mv+0.5)/1000.0,mxset/1000.0]]
+#table_of_limits(marr2,run_name=runname,func=kappa,alpha_p=0.1)

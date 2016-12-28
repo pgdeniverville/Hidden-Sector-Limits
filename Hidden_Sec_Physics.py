@@ -43,6 +43,7 @@ def reduced_mass(m1,m2):
     return m1*m2/(m1+m2)
 
 #Scattering cross section for kinetic mixing
+#These are only applicable for mV>>alpha_em^2*m_e^2 (see https://arxiv.org/pdf/1108.5383v3.pdf)
 def sigman(mv,mx,kappa,alpha_p):
     return 16*math.pi*kappa**2*alpha_em*alpha_p*reduced_mass(mp,mx)**2/mv**4*0.25
 def sigman_to_kappa(sigma,mv,mx,alpha_p):
@@ -50,6 +51,12 @@ def sigman_to_kappa(sigma,mv,mx,alpha_p):
 
 def sigman_to_kappa2(sigma,mv,mx,alpha_p):
     return math.sqrt(sigma/conversion/100**2/sigman(mv,mx,1,alpha_p))
+
+def sigmae(mv,mx,kappa,alpha_p):
+    return 16*math.pi*kappa**2*alpha_em*alpha_p*reduced_mass(melec,mx)**2/(mv**2+alpha_em**2*melec**2)**2
+def sigmae_to_kappa(sigma,mv,mx,alpha_p):
+    return math.sqrt(sigma/conversion/100**2/(16*math.pi*alpha_em*alpha_p*reduced_mass(melec,mx)**2/(mv**2+alpha_em**2*melec**2)**2))
+    #return math.sqrt(sigma/conversion/100**2/sigmae(mv,mx,1,alpha_p))
 
 #Scattering cross section for baryonic with kappa=0
 def sigman_B(mv,mx,alpha_b):
@@ -259,6 +266,7 @@ invispionbaryonicdat = np.loadtxt("data/invis_pion_baryonic.dat")
 ######
 
 #https://arxiv.org/abs/1610.02988
+#These limits are only valid in the case that V->\chi\bar\chi is dominant decay channel
 NA64dat = np.loadtxt("data/NA64_formatted.dat")
 
 ######
@@ -302,4 +310,7 @@ Direct_Det_Func=[interp1d(np.array(tab)[:,0],np.array(tab)[:,1],bounds_error=Fal
 def Direct_Det(mx):
     return min([func(mx) for func in Direct_Det_Func])
 
-
+#arxiv:1206.2644v1.pdf
+#See also https://arxiv.org/pdf/1505.00011.pdf for comparison
+xenon10e_dat = np.loadtxt("data/xenon10e_formatted.csv",delimiter=",")
+xenon10efunc=interp1d(xenon10e_dat[:,0],xenon10e_dat[:,1],bounds_error=False,fill_value=1e-15)

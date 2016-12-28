@@ -31,6 +31,14 @@ def table_of_limits_baryonic(mass_arr,kappa=_kappa,run_name="",fill_val=1000,fun
     K_Vpi_func_2=interp1d(K_Vpi_tab2[:,0],K_Vpi_tab2[:,1],bounds_error=False,fill_value=fill_val)
     k_Vpi_tab = [func(mv,mx,min(K_Vpi_func_1(mv),K_Vpi_func_2(mv)),kappa) for mv,mx in  mass_arr]
 
+    K_Vpi_tab1=gen_K_VpiB_lim_conservative(kpip_invis_dat_1)
+    K_Vpi_func_1=interp1d(K_Vpi_tab1[:,0],K_Vpi_tab1[:,1],bounds_error=False,fill_value=fill_val)
+    K_Vpi_tab2=gen_K_VpiB_lim_conservative(kpip_invis_dat_2)
+    K_Vpi_func_2=interp1d(K_Vpi_tab2[:,0],K_Vpi_tab2[:,1],bounds_error=False,fill_value=fill_val)
+    k_Vpi_tabc = [func(mv,mx,min(K_Vpi_func_1(mv),K_Vpi_func_2(mv)),kappa) for mv,mx in  mass_arr]
+
+
+
     print("Generating limits from monojet")
     monojet_tab = [func(mv,mx,monojet_limit_baryonic(),kappa) for mv,mx in mass_arr]
 
@@ -41,11 +49,12 @@ def table_of_limits_baryonic(mass_arr,kappa=_kappa,run_name="",fill_val=1000,fun
     np.savetxt(run_name+"direct_det.dat",direct_det_tab)
     np.savetxt(run_name+"invispion.dat",invispion_tab)
     np.savetxt(run_name+"kpipinvisk.dat",k_Vpi_tab)
+    np.savetxt(run_name+"kpipinviskconservative.dat",k_Vpi_tabc)
     np.savetxt(run_name+"monojet.dat",monojet_tab)
     np.savetxt(run_name+"rare_decay.dat",rare_tab)
 
 #marr=[[mv/1000.0,mx/1000.0] for mv in range(10,100) for mx in range(1,mv/2,1)
-marr=[[3*mx/1000.0,mx/1000.0] for mx in range(1,1000)]
+marr=[[3*mx/1000.0,mx/1000.0] for mx in range(1,1500)]
 
 make_sure_path_exists("output/")
 
