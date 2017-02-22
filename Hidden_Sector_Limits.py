@@ -35,7 +35,10 @@ def table_of_limits(mass_arr,alpha_p=_alpha_p_set,run_name="",fill_val=1000,func
 	print("Generating BaBar limits")
 	babar_tab=[func(mv,mx,alpha_p,babar_func(mv,mx,alpha_p)) for mv,mx in mass_arr]
 
-	print("Generating limits from rare decays (J\Psi->V)")
+	print("Generating BaBar 2017 limits")
+	babar2017_tab=[func(mv,mx,alpha_p,babar2017_interp(mv)) for mv,mx in mass_arr]
+
+        print("Generating limits from rare decays (J\Psi->V)")
 	rare_tab = [func(mv,mx,alpha_p,rarelimit(mv,mx,alpha_p)) for mv,mx in mass_arr]
 
 	print("Generating Monojet limits")
@@ -89,6 +92,7 @@ def table_of_limits(mass_arr,alpha_p=_alpha_p_set,run_name="",fill_val=1000,func
 	np.savetxt(run_name+"precision_g_minus_2_fav_high.dat",g_muon_fav_high_tab)
 	#np.savetxt(run_name+"direct_det.dat",direct_det_tab)
 	np.savetxt(run_name+"babar.dat",babar_tab)
+	np.savetxt(run_name+"babar2017.dat",babar2017_tab)
 	np.savetxt(run_name+"relic_density.dat",relic_tab)
 	np.savetxt(run_name+"rare_decay.dat",rare_tab)
 	np.savetxt(run_name+"monojet.dat",monojet_tab)
@@ -116,4 +120,4 @@ table_of_limits(marr,run_name="output/y3_")
 mxset=10
 runname="output/mx"+masstext(mxset/1000.0)+"_"
 marr2=[[mv/1000.0,mxset/1000.0] for mv in range(mxset,4000)]+[[(mv-0.5)/1000.0,mxset/1000.0],[(mv+0.5)/1000.0,mxset/1000.0]]
-#table_of_limits(marr2,run_name=runname,func=kappa,alpha_p=0.1)
+table_of_limits(marr2,run_name=runname,func=kappa,alpha_p=0.1)
