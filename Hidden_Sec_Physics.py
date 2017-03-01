@@ -214,6 +214,7 @@ babar_dat=np.loadtxt("data/babar.dat")
 babar_interp = interp1d(babar_dat[:,0],babar_dat[:,1])
 
 #Sensitivity from BaBar analysis https://arxiv.org/abs/1702.03327
+#Should maybe add a branching ratio to this, but normally Br(V->invis)~1 for our parameters
 babar2017_dat = np.loadtxt("data/babar2017_formatted.dat")
 babar2017_interp = interp1d(babar2017_dat[:,0],babar2017_dat[:,1])
 
