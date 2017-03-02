@@ -272,6 +272,11 @@ invispionbaryonicdat = np.loadtxt("data/invis_pion_baryonic.dat")
 #These limits are only valid in the case that V->\chi\bar\chi is dominant decay channel
 NA64dat = np.loadtxt("data/NA64_formatted.dat")
 
+#Projections from Physics Beyond Colliders Working Group meeting
+NA64_2016dat = np.loadtxt("data/NA64_2016_formatted.dat")
+NA64_2017dat = np.loadtxt("data/NA64_2017_formatted.dat")
+NA64_2018dat = np.loadtxt("data/NA64_2018_formatted.dat")
+
 ######
 #E137#
 ######

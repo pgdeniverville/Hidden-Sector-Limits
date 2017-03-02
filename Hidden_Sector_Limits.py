@@ -84,6 +84,17 @@ def table_of_limits(mass_arr,alpha_p=_alpha_p_set,run_name="",fill_val=1000,func
         NA64_func=interp1d(NA64dat[:,0],NA64dat[:,1],bounds_error=False,fill_value=fill_val)
 	NA64_tab=[func(mv,mx,alpha_p,NA64_func(mv)) for mv,mx in mass_arr]
 
+        #These are all projections, the year reflects the time when
+        #the data was recorded, not analyzed!
+        NA64_2016_func=interp1d(NA64_2016dat[:,0],NA64_2016dat[:,1],bounds_error=False,fill_value=fill_val)
+	NA64_2016_tab=[func(mv,mx,alpha_p,NA64_2016_func(mv)) for mv,mx in mass_arr]
+        NA64_2017_func=interp1d(NA64_2017dat[:,0],NA64_2017dat[:,1],bounds_error=False,fill_value=fill_val)
+	NA64_2017_tab=[func(mv,mx,alpha_p,NA64_2017_func(mv)) for mv,mx in mass_arr]
+        NA64_2018_func=interp1d(NA64_2018dat[:,0],NA64_2018dat[:,1],bounds_error=False,fill_value=fill_val)
+	NA64_2018_tab=[func(mv,mx,alpha_p,NA64_2018_func(mv)) for mv,mx in mass_arr]
+
+
+
 	np.savetxt(run_name+"relic_density.dat",relic_tab)
 	np.savetxt(run_name+"precision_g_minus_2.dat",g_minus_2_tab)
 	np.savetxt(run_name+"precision_g_minus_2_electron.dat",g_minus_2_electron)
@@ -104,6 +115,9 @@ def table_of_limits(mass_arr,alpha_p=_alpha_p_set,run_name="",fill_val=1000,func
 	np.savetxt(run_name+"direct_det.dat",direct_det_tab)
 	np.savetxt(run_name+"direct_det_e.dat",direct_det_e_tab)
 	np.savetxt(run_name+"NA64.dat",NA64_tab)
+	np.savetxt(run_name+"NA64_2016.dat",NA64_2016_tab)
+	np.savetxt(run_name+"NA64_2017.dat",NA64_2017_tab)
+	np.savetxt(run_name+"NA64_2018.dat",NA64_2018_tab)
 
 
 #Make an array of masses!
