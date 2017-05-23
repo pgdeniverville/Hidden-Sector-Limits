@@ -54,14 +54,14 @@ def table_of_limits_baryonic(mass_arr,kappa=_kappa,run_name="",fill_val=1000,fun
     np.savetxt(run_name+"rare_decay.dat",rare_tab)
 
 #marr=[[mv/1000.0,mx/1000.0] for mv in range(10,100) for mx in range(1,mv/2,1)
-marr=[[3*mx/1000.0,mx/1000.0] for mx in range(1,1500)]
+marr=[[mv/1000.0,mv/3000.0] for mv in range(1,4000)]
 
 make_sure_path_exists("output/")
 
 table_of_limits_baryonic(marr,run_name="output/bar3_")
 
-mxset=0.01
-runname="output/barmx"+masstext(mxset)+"_"
-marr2=[[mv/1000.0,mxset] for mv in range(mx,4000)]
-table_of_limits_baryonic(marr2,run_name=runname)
+#mxset=0.005
+#runname="output/barmx"+masstext(mxset)+"_"
+#marr2=[[mv/1000.0,mxset] for mv in range(2*int(mxset*1000),4000)]
+#table_of_limits_baryonic(marr2,run_name=runname)
 

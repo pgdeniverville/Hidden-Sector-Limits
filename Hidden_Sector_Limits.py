@@ -12,7 +12,7 @@ change dramatically. Use at your own risk!
 """
 
 #Default value of alpha_p to use
-_alpha_p_set = 0.5
+_alpha_p_set = 0.1
 
 #Takes an array of masses mass_arr and generates some experimental limits for kinetically mixed hidden sector dark matter. These limits are written to text files.
 #func can be any function that accepts arguments in the form (mv,mx,alpha_p,kappa).
@@ -127,9 +127,9 @@ marr=[[3*mx/1000.0,mx/1000.0] for mx in range(1,1000)]
 make_sure_path_exists("output/")
 
 #Masses are quite large, so this will take awhile.
-table_of_limits(marr,run_name="output/y3_")
+table_of_limits(marr,run_name="output/y3_0.1_")
 
-mxset=10
+mxset=5
 runname="output/mx"+masstext(mxset/1000.0)+"_"
-marr2=[[mv/1000.0,mxset/1000.0] for mv in range(mxset,4000)]+[[(mv-0.5)/1000.0,mxset/1000.0],[(mv+0.5)/1000.0,mxset/1000.0]]
+marr2=[[mv/1000.0,mxset/1000.0] for mv in range(mxset,4000)]
 table_of_limits(marr2,run_name=runname,func=kappa,alpha_p=0.1)
