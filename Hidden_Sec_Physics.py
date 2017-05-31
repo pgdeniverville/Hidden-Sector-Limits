@@ -230,6 +230,21 @@ def babar_func(mv,mx,alpha_p):
     return term
 
 
+#################################
+#Baryonic Limits from 1705.06726#
+#################################
+#These largely eliminate the non-anomaly-free version of
+#the model. I expect an anomaly-free version will need to
+#be found for the model to be viable.
+anomalon_1705_06726_dat = np.loadtxt("data/Anomalon_formatted.dat")
+anomalon_1705_06726_dat[:,1]=anomalon_1705_06726_dat[:,1]**2/4.0/math.pi
+BtoKX_1705_06726_dat = np.loadtxt("data/1705.06726.BtoKX_formatted.dat")
+BtoKX_1705_06726_dat[:,1]=BtoKX_1705_06726_dat[:,1]**2/4.0/math.pi
+ZtogammaX_1705_06726_dat = np.loadtxt("data/1705.06726.ZtogammaX_formatted.dat")
+ZtogammaX_1705_06726_dat[:,1]=ZtogammaX_1705_06726_dat[:,1]**2/4.0/math.pi
+KtopiX_1705_06726_dat = np.loadtxt("data/1705.06726.KtopiX_formatted.dat")
+KtopiX_1705_06726_dat[:,1]=KtopiX_1705_06726_dat[:,1]**2/4.0/math.pi
+
 #############################
 #Baryonic Neutron Scattering#
 #############################

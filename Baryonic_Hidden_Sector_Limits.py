@@ -45,6 +45,19 @@ def table_of_limits_baryonic(mass_arr,kappa=_kappa,run_name="",fill_val=1000,fun
     print("Generating limits from rare decays (J\Psi->V)")
     rare_tab = [func(mv,mx,rarelimitB(mv,mx,kappa),kappa) for mv,mx in mass_arr]
 
+    print("Loading Anomalon Limits")
+    anomalon_func = interp1d(anomalon_1705_06726_dat[:,0],anomalon_1705_06726_dat[:,1],bounds_error=False,fill_value=fill_val)
+    anomalon_tab = [func(mv,mx,anomalon_func(mv),kappa) for mv,mx in mass_arr]
+    print("Loading limits from B->KX")
+    BtoKX_func = interp1d(BtoKX_1705_06726_dat[:,0],BtoKX_1705_06726_dat[:,1],bounds_error=False,fill_value=fill_val)
+    BtoKX_tab = [func(mv,mx,BtoKX_func(mv),kappa) for mv,mx in mass_arr]
+    print("Loading limits from K0->piX")
+    ZtogammaX_func = interp1d(ZtogammaX_1705_06726_dat[:,0],ZtogammaX_1705_06726_dat[:,1],bounds_error=False,fill_value=fill_val)
+    ZtogammaX_tab = [func(mv,mx,ZtogammaX_func(mv),kappa) for mv,mx in mass_arr]
+    print("Loading limits from Z->GammaX")
+    KtopiX_func = interp1d(KtopiX_1705_06726_dat[:,0],KtopiX_1705_06726_dat[:,1],bounds_error=False,fill_value=fill_val)
+    KtopiX_tab = [func(mv,mx,KtopiX_func(mv),kappa) for mv,mx in mass_arr]
+
     np.savetxt(run_name+"neutronscatter.dat",neutron_tab)
     np.savetxt(run_name+"direct_det.dat",direct_det_tab)
     np.savetxt(run_name+"invispion.dat",invispion_tab)
@@ -52,9 +65,13 @@ def table_of_limits_baryonic(mass_arr,kappa=_kappa,run_name="",fill_val=1000,fun
     np.savetxt(run_name+"kpipinviskconservative.dat",k_Vpi_tabc)
     np.savetxt(run_name+"monojet.dat",monojet_tab)
     np.savetxt(run_name+"rare_decay.dat",rare_tab)
+    np.savetxt(run_name+"anomalon.dat",anomalon_tab)
+    np.savetxt(run_name+"BtoKX.dat",BtoKX_tab)
+    np.savetxt(run_name+"ZtogammaX.dat",ZtogammaX_tab)
+    np.savetxt(run_name+"KtopiX.dat",KtopiX_tab)
 
 #marr=[[mv/1000.0,mx/1000.0] for mv in range(10,100) for mx in range(1,mv/2,1)
-marr=[[mv/1000.0,mv/3000.0] for mv in range(1,4000)]
+marr=[[mv/1000.0,mv/3000.0] for mv in range(1,1000)]+[[mv/1000.0,mv/3000.0] for mv in range(1000,4000,10)]
 
 make_sure_path_exists("output/")
 
