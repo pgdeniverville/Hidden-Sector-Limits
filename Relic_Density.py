@@ -41,12 +41,17 @@ def neq_integrand(En,m,T,g,spinfact,mu):
         return 0.0
     except ZeroDivisionError:
         return 0.0
+#Need to add a low temperature approximation.
 def neq(m,T,g,spinfact,mu):
-    val,err = quad(neq_integrand,m,np.inf,limit=600,epsrel=1e-6,epsabs=1e-300,args=(m,T,g,spinfact,mu,))
-    if err*100 > val:
-        print("neq integration failure")
-        print(val,err)
-        print(m,T)
+    if m/T>25:
+        #print("Adopting high-x behavior.", m, T)
+        return g*(m*T/(2*math.pi))**1.5*math.exp(-m/T)
+    else:
+        val,err = quad(neq_integrand,m,np.inf,limit=600,epsrel=1e-6,epsabs=1e-300,args=(m,T,g,spinfact,mu,))
+    if err*100 > abs(val):
+        print("neq integration failure",val,err,m,T)
+    if val<=0.0:
+        print("neq is weird",val,err,m,T)
     return val
 #Equilibrium value of Y=n/s. Normally do the calculations with spinfact=mu=0
 #as they do not make noticeable contributions. g is the number of degrees of
@@ -115,29 +120,46 @@ def sigma_dmdm_to_ll(alpha_D,kappa,mv,mx,ml,s):
     else:
         return 0.0
 
-
-
 def sigma_dmdm(s,alpha_D,kappa,mv,mx):
     return sigma_dmdm_to_ll(alpha_D,kappa,mv,mx,melec,s)+sigma_dmdm_to_ll(alpha_D,kappa,mv,mx,mmuon,s)*(1+rratio(math.sqrt(s)))
 
-
-
 #Thermally averaged dark matter cross section
 def bessel_ratio(mx,T,s):
-    if(s/T>100):
+    if(math.sqrt(s)/T>100):
         return math.sqrt(2.0/math.pi)*mx/math.sqrt(T)/s**0.25*math.exp((2*mx-math.sqrt(s))/T)
     else:
         return kn(1,math.sqrt(s)/T)/kn(2,mx/T)**2
 def sigmav_integrand(s,alpha_D,kappa,mv,mx,T):
+    #print(s,alpha_D,kappa,mv,mx,T,math.sqrt(s),(s-4*mx**2),sigma_dmdm(s,alpha_D,kappa,mv,mx),bessel_ratio(mx,T,s))
     return math.sqrt(s)*(s-4*mx**2)*sigma_dmdm(s,alpha_D,kappa,mv,mx)*bessel_ratio(mx,T,s)
 def sigmav(T, alpha_D,kappa,mv,mx):
     val, err=quad(sigmav_integrand,4*mx**2,np.inf,args=(alpha_D,kappa,mv,mx,T,),limit=400,epsabs=1e-300,epsrel=10**-3)
-    if err*100 > val:
-        pass
-        #print("Possible error in sigmav integration!")
-        #print(val,err)
-        #print(mv,mx,T)
-    return 1.0/(8*mx**4*T)*val
+    if err*100 > val or val==0.0:
+        if kappa==0 or alpha_D==0:
+            return 0.0
+        #print("Things going badly!",val,err,mx,T,mv)
+        val, err=quad(sigmav_integrand,4*mx**2,max(10*T**2,10*mx**2),args=(alpha_D,kappa,mv,mx,T,),limit=400,epsabs=1e-300,epsrel=10**-3)
+        #print("Correction Attempt",val, err,mx,T,mv)
+        for n in range(10):
+            val2, err2=quad(sigmav_integrand,4*mx**2,max(50*(n+1)*T**2,50*(n+1)*mx**2),args=(alpha_D,kappa,mv,mx,T,),limit=400,epsabs=1e-300,epsrel=10**-3)
+            #print(n,val2,val-val2,err2)
+            if abs(val2-val)<0.01*abs(val2):
+                #print("correction worked!")
+                val=val2
+                err=err2
+                break
+            else:
+                #print("Iterating on correction",val2,err2)
+                val=val2
+                err=err2
+        #print(val2,err2)
+        if err*100>val or val==0.0:
+            print("Possible error in sigmav integration!")
+            print(val,err)
+            print(mv,mx,T)
+
+    #print(val,err)
+    return val/(8*mx**4*T)
 
 
 def Yevolution_integrand(x,mx,sigmav):
@@ -174,20 +196,23 @@ def Ystep(g,mx,sigmav,xstep=1e-2,Deltax=1e-4):
 
 def Ysearch(g,alpha_D,mv,mx,tol=1e-3,xstep=1e-2,Deltax=1e-4):
     kappa = math.sqrt(relic_density_sigma/sigmav(mx/20.0,alpha_D,1.0,mv,mx)/conversion)
-    print(kappa)
+    print("Initial kappa estimate={}".format(str(kappa)))
+    it=0
     while True:
         sig = lambda x: sigmav(mx/x,alpha_D,kappa,mv,mx)
         Y,xf = Ystep(g,mx,sig,xstep,Deltax)
         Omega = Omega_from_Y(Y,mx)
         if abs(OmegaCDM-Omega)<tol:
+            print("Accepted kappa={} Omega_CDM={}".format(str(kappa),str(Omega)))
             break
-        print(kappa,Omega)
+        it+=1
+        print("Iteration {} kappa={} Omega_CDM={}".format(str(it),str(kappa),str(Omega)))
         kappa = math.sqrt(kappa**2*Omega/OmegaCDM)
     return kappa,Omega,xf,Y
 
 
-
-#First test evolution function. Oddly, performs about as well as Runge-Kutta.
+'''
+#First test evolution function. Oddly, performs only a little worse than Runge-Kutta.
 def Euler_Step(x,xres,dydx,Y):
     return dydx(x,xres,Y)*xres,xres
 
@@ -231,7 +256,7 @@ def Ysearch_euler(g,alpha_D,mv,mx,tol=1e-3,xstep=1e-2,Deltax=1e-4):
         #print(kappa,Omega)
         kappa = math.sqrt(kappa**2*Omega/OmegaCDM)
     return kappa,Omega,xf,Y
-
+'''
 from Hidden_Sec_Utilities import *
 
 def Y_func(mv,mx,alpha_p,kappa):
@@ -244,18 +269,26 @@ def relic_table(mass_arr,alpha_D=0.5,run_name="",func=Y_func):
 
     np.savetxt(run_name+"relic_density.dat",relic_tab)
 
-#mass_arr=[[0.3,0.1],[3,1]]
+mass_arr=[[0.006,0.002],[0.03,0.01],[0.1,0.0333],[0.3,0.1],[1,.333],[3,1]]
 
-#relic_table(mass_arr,run_name="Test_Run")
-import time
+relic_table(mass_arr,run_name="Test_Run")
+#import time
 
-mvtest=0.003
-mxtest=0.001
 
-start = time.time()
-print(Ysearch(2,0.5,mvtest,mxtest))
-end = time.time()
-print(end-start)
+#mvtest=0.006
+#mxtest=0.002
+
+#print(sigmav_integrand(2.7999e-5,0.5,1,mvtest,mxtest,2.88e-6))
+
+#print(sigmav(2.88e-6,0.5,1.0,mvtest,mxtest))
+#print(sigmav(0.01/20.0,0.5,1.0,0.03,0.01))
+#print(sigmav(0.1/20.0,0.5,1.0,0.3,0.1))
+#print(sigmav(1/20.0,0.5,1.0,3,1))
+
+#start = time.time()
+#print(Ysearch(2,0.5,mvtest,mxtest))
+#end = time.time()
+#print(end-start)
 
 #start = time.time()
 #print(Ysearch_euler(2,0.5,mvtest,mxtest))
