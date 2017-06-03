@@ -8,14 +8,23 @@ import scipy.special as sc
 from scipy.interpolate import interp1d
 from scipy.special import kn
 from scipy.integrate import quad
-from scipy.integrate import quadrature
 from scipy.optimize import brentq
+from scipy.optimize import brenth
 
 from constants import *
-
+#Start tracking Y_evolution when
+#Delta_Y_Condition*Y_eq(x) = Y(x)-Y_eq(x)
 Delta_Y_Condition=0.1
+#How well to track Y during the Y evolution.
+#It is not recommended that this be increased.
+#Decreasing this value will improve accuracy at
+#the cost of runtime.
 Y_ACCURACY=1e-6
-
+#This determies how close
+EPSILON_TOLERANCE=1e-2
+#How much to increment epsilon by to bound
+#the brent search.
+BOUNDING=2
 from Runge_Kutta import rkqs1d
 
 #Degrees of freedom from https://arxiv.org/pdf/1609.04979.pdf
@@ -59,6 +68,7 @@ def neq(m,T,g,spinfact,mu):
 def Yeq(m,T,g,spinfact,mu):
     return neq(m,T,g,spinfact,mu)/entropy(T)
 def DeltaY(m,x,Deltax,g,sigma):
+    #print(m,x,Deltax,g,sigma(x))
     hold =x*Hub(m/x)*(Yeq(m,m/x,g,0,0)-Yeq(m,m/(x+Deltax),g,0,0))/Deltax/(2*sigma(x)*neq(m,m/x,g,0,0))
     return hold
 
@@ -165,9 +175,25 @@ def sigmav(T, alpha_D,kappa,mv,mx):
 def Yevolution_integrand(x,mx,sigmav):
     return entropy(mx/x)*sigmav(x)/(x*Hub(mx/x))
 #sigmav is a function that only accepts x.
-def Ystep(g,mx,sigmav,xstep=1e-2,Deltax=1e-4):
+def Omega_Cond(kappa,g,mx,sigmav_i,xstep=1e-2,Delta=1e-4):
+    Omega=Ystep(kappa,g,mx,sigmav_i,xstep,Delta)
+    print("Brentq search epsilon={} Omega={}".format(str(kappa),str(Omega)))
+    return OmegaCDM-Omega
+
+def Ysearch(g,alpha_D,mv,mx,tol=5e-3,xstep=1e-2,Deltax=1e-4):
+    kappa = math.sqrt(relic_density_sigma/sigmav(mx/20.0,alpha_D,1.0,mv,mx)/conversion)
+    sigk = lambda x,kap: sigmav(mx/x,alpha_D,kap,mv,mx)
+    print("Initial epsilon estimate={} for mv={} mx={}".format(str(kappa),masstext(mv),masstext(mx)))
+    #brenth seems faster than brentq by approximately 30%
+    kappa_final= brenth(Omega_Cond,kappa_next,kappa_next*BOUNDING,args=(g,mx,sigk,),rtol=EPSILON_TOLERANCE)
+    print("Accepted epsilon={}".format(str(kappa_final)))
+    return kappa_final
+
+def Ystep(kappa,g,mx,sigmav_i,xstep=1e-2,Deltax=1e-4):
     Yeqset = lambda x: Yeq(mx,mx/x,g,0,0)
     neqset = lambda x: neq(mx,mx/x,g,0,0)
+
+    sigmav = lambda x: sigmav_i(x,kappa)
 
     #Find a point shortly before freezeout
     xstart=brentq(DeltaCond,1,100,args=(mx,Deltax,g,sigmav,Delta_Y_Condition,))
@@ -191,72 +217,9 @@ def Ystep(g,mx,sigmav,xstep=1e-2,Deltax=1e-4):
         print(Yinf_val,Yinf_error)
         print(xi,mx)
     Yinf = 1.0/(1.0/(2.5*Yeqset(xi))+Yinf_val)
-    return Yinf,xi
+    return Omega_from_Y(Yinf,mx)
 
 
-def Ysearch(g,alpha_D,mv,mx,tol=1e-3,xstep=1e-2,Deltax=1e-4):
-    kappa = math.sqrt(relic_density_sigma/sigmav(mx/20.0,alpha_D,1.0,mv,mx)/conversion)
-    print("Initial kappa estimate={}".format(str(kappa)))
-    it=0
-    while True:
-        sig = lambda x: sigmav(mx/x,alpha_D,kappa,mv,mx)
-        Y,xf = Ystep(g,mx,sig,xstep,Deltax)
-        Omega = Omega_from_Y(Y,mx)
-        if abs(OmegaCDM-Omega)<tol:
-            print("Accepted kappa={} Omega_CDM={}".format(str(kappa),str(Omega)))
-            break
-        it+=1
-        print("Iteration {} kappa={} Omega_CDM={}".format(str(it),str(kappa),str(Omega)))
-        kappa = math.sqrt(kappa**2*Omega/OmegaCDM)
-    return kappa,Omega,xf,Y
-
-
-'''
-#First test evolution function. Oddly, performs only a little worse than Runge-Kutta.
-def Euler_Step(x,xres,dydx,Y):
-    return dydx(x,xres,Y)*xres,xres
-
-def Ystep_euler(g,mx,sigmav,xstep=1e-2,Deltax=1e-4):
-    Yeqset = lambda x: Yeq(mx,mx/x,g,0,0)
-    neqset = lambda x: neq(mx,mx/x,g,0,0)
-
-    #Find a point shortly before freezeout
-    xstart=brentq(DeltaCond,1,100,args=(mx,Deltax,g,sigmav,Delta_Y_Condition,))
-    Y = Yeqset(xstart)
-    xi=xstart
-    xmax=xstart+20
-    dydx = lambda x, xstep, Y: -Yeqset(x+xstep)/x*neqset(x+xstep)*sigmav(x+xstep)        /Hub(mx/(x+xstep))*((Y/Yeqset(x+xstep))**2-1)
-    while True:
-        if Y>2.5*Yeqset(xi) or xi>xmax:
-            break
-        deltay,xstep = Euler_Step(xi,xstep,dydx,Y)
-        #print(xi,Y,Yeqset(xi),deltay)
-        Y+=deltay
-        xi+=xstep
-
-    Yinf_val,Yinf_error = quad(Yevolution_integrand,xi,1000,epsabs=1e-300,epsrel=1e-4,limit=400,args=(mx,sigmav,))
-    if Yinf_val < 100*Yinf_error:
-        print("Error in Ystep integration")
-        print(Yinf_val,Yinf_error)
-        print(xi,mx)
-    Yinf = 1.0/(1.0/(2.5*Yeqset(xi))+Yinf_val)
-    return Yinf,xi+xstep
-
-
-
-def Ysearch_euler(g,alpha_D,mv,mx,tol=1e-3,xstep=1e-2,Deltax=1e-4):
-    kappa = math.sqrt(relic_density_sigma/sigmav(mx/20.0,alpha_D,1.0,mv,mx)/conversion)
-    #print(kappa)
-    while True:
-        sig = lambda x: sigmav(mx/x,alpha_D,kappa,mv,mx)
-        Y,xf = Ystep_euler(g,mx,sig,xstep,Deltax)
-        Omega = Omega_from_Y(Y,mx)
-        if abs(OmegaCDM-Omega)<tol:
-            break
-        #print(kappa,Omega)
-        kappa = math.sqrt(kappa**2*Omega/OmegaCDM)
-    return kappa,Omega,xf,Y
-'''
 from Hidden_Sec_Utilities import *
 
 def Y_func(mv,mx,alpha_p,kappa):
@@ -265,14 +228,21 @@ def Y_func(mv,mx,alpha_p,kappa):
 def relic_table(mass_arr,alpha_D=0.5,run_name="",func=Y_func):
     mass_arr = np.array(mass_arr)
 
-    relic_tab=[func(mv,mx,alpha_D,Ysearch(2,alpha_D,mv,mx)[0]) for mv,mx in mass_arr]
+    relic_tab=[func(mv,mx,alpha_D,Ysearch(2,alpha_D,mv,mx)) for mv,mx in mass_arr]
 
     np.savetxt(run_name+"relic_density.dat",relic_tab)
 
-mass_arr=[[0.006,0.002],[0.03,0.01],[0.1,0.0333],[0.3,0.1],[1,.333],[3,1]]
+mv_arr=[6]+[10*mv+10 for mv in range(19)]+[25*mv+200 for mv in range(30)]+[100*mv+1000 for mv in range(20)]
 
-relic_table(mass_arr,run_name="Test_Run")
-#import time
+mass_arr=[[mv/1000.0,mv/3000.0] for mv in mv_arr]
+#mass_arr=[[0.006,0.002],[0.01,0.01/3.0],[0.03,0.01],[0.1,0.0333],[0.3,0.1],[1,.333],[3,1]]
+#mass_arr=[[0.01,0.01/3.0]]
+
+import time
+start = time.time()
+relic_table(mass_arr,run_name="Test_Run_Final")
+end = time.time()
+print("Total Runtime={}".format(str(end-start)))
 
 
 #mvtest=0.006
