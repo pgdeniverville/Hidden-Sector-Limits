@@ -10,6 +10,7 @@ from scipy.special import kn
 from scipy.integrate import quad
 from scipy.optimize import brentq
 from scipy.optimize import brenth
+from scipy.optimize import bracket
 
 from constants import *
 #Start tracking Y_evolution when
@@ -18,13 +19,13 @@ Delta_Y_Condition=0.1
 #How well to track Y during the Y evolution.
 #It is not recommended that this be increased.
 #Decreasing this value will improve accuracy at
-#the cost of runtime.
+#the cost of runtime. Further increasing the ac
 Y_ACCURACY=1e-6
-#This determies how close
+#This determies the precision to which epsilon will
+#be determined.
 EPSILON_TOLERANCE=1e-2
-#How much to increment epsilon by to bound
-#the brent search.
-BOUNDING=2
+X_LARGE=1000
+
 from Runge_Kutta import rkqs1d
 
 #Degrees of freedom from https://arxiv.org/pdf/1609.04979.pdf
@@ -56,7 +57,7 @@ def neq(m,T,g,spinfact,mu):
         #print("Adopting high-x behavior.", m, T)
         return g*(m*T/(2*math.pi))**1.5*math.exp(-m/T)
     else:
-        val,err = quad(neq_integrand,m,np.inf,limit=600,epsrel=1e-6,epsabs=1e-300,args=(m,T,g,spinfact,mu,))
+        val,err = quad(neq_integrand,m,np.inf,limit=1200,epsrel=1e-3,epsabs=1e-300,args=(m,T,g,spinfact,mu,))
     if err*100 > abs(val):
         print("neq integration failure",val,err,m,T)
     if val<=0.0:
@@ -171,29 +172,40 @@ def sigmav(T, alpha_D,kappa,mv,mx):
     #print(val,err)
     return val/(8*mx**4*T)
 
-
-def Yevolution_integrand(x,mx,sigmav):
-    return entropy(mx/x)*sigmav(x)/(x*Hub(mx/x))
-#sigmav is a function that only accepts x.
-def Omega_Cond(kappa,g,mx,sigmav_i,xstep=1e-2,Delta=1e-4):
-    Omega=Ystep(kappa,g,mx,sigmav_i,xstep,Delta)
-    print("Brentq search epsilon={} Omega={}".format(str(kappa),str(Omega)))
+#Omega returns the difference between the relic density
+#produced by
+#sigmav should be a funcion sigmav(x,epsilon).
+def Omega_Cond(kappa,g,mx,sigmav,xstep=1e-2,Delta=1e-4):
+    Omega=Ystep(g,mx,sigmav,xstep,Delta)
+    sigx = lambda x: sigmav(x,kappa)
+    print("Brenth search epsilon={} Omega={}".format(str(kappa),str(Omega)))
     return OmegaCDM-Omega
 
+def Omega_Cond_bracket(kappa,g,mx,sigmav_i,xstep=1e-2,Delta=1e-4):
+    Omega=Ystep(g,mx,sigmav_i,xstep,Delta)
+    sigx = lambda x: sigmav(x,kappa)
+    print("Bracket search epsilon={} Omega={}".format(str(kappa),str(Omega)))
+    return OmegaCDM-Omega
+
+#Slower than a more aggressive implementation, but also guaranteed to find a solution.
 def Ysearch(g,alpha_D,mv,mx,tol=5e-3,xstep=1e-2,Deltax=1e-4):
     kappa = math.sqrt(relic_density_sigma/sigmav(mx/20.0,alpha_D,1.0,mv,mx)/conversion)
     sigk = lambda x,kap: sigmav(mx/x,alpha_D,kap,mv,mx)
     print("Initial epsilon estimate={} for mv={} mx={}".format(str(kappa),masstext(mv),masstext(mx)))
     #brenth seems faster than brentq by approximately 30%
-    kappa_final= brenth(Omega_Cond,kappa_next,kappa_next*BOUNDING,args=(g,mx,sigk,),rtol=EPSILON_TOLERANCE)
+    ea,eb,ec,fa,fb,fc,calls=bracket(Omega_Cond_bracket,kappa,kappa*2,args=(g,mx,sigk,))
+    kappa_final= brenth(Omega_Cond,ea,ec,args=(g,mx,sigk,),rtol=EPSILON_TOLERANCE)
     print("Accepted epsilon={}".format(str(kappa_final)))
     return kappa_final
 
-def Ystep(kappa,g,mx,sigmav_i,xstep=1e-2,Deltax=1e-4):
+
+def Yevolution_integrand(x,mx,sigmav):
+    return entropy(mx/x)*sigmav(x)/(x*Hub(mx/x))
+#A fairly general algorithm for determining the present day
+#relic density of single component dark matter.
+def Ystep(g,mx,sigmav,xstep=1e-2,Deltax=1e-4):
     Yeqset = lambda x: Yeq(mx,mx/x,g,0,0)
     neqset = lambda x: neq(mx,mx/x,g,0,0)
-
-    sigmav = lambda x: sigmav_i(x,kappa)
 
     #Find a point shortly before freezeout
     xstart=brentq(DeltaCond,1,100,args=(mx,Deltax,g,sigmav,Delta_Y_Condition,))
@@ -207,11 +219,13 @@ def Ystep(kappa,g,mx,sigmav_i,xstep=1e-2,Deltax=1e-4):
             break
         if xi+xstep>xmax:
             xstep = xmax-xi
-
+        #Using Runge-Kutta from Numerical Recipes for C.
         xi,Y,deltaxlast,xstep=rkqs1d(Y, dydx(xi,Y), xi, xstep, Y_ACCURACY, dydx)
         #print(xi,Y,Yeqset(xi),deltaxlast,xstep)
 
-    Yinf_val,Yinf_error = quad(Yevolution_integrand,xi,1000,epsabs=1e-300,epsrel=1e-2,limit=200,args=(mx,sigmav,))
+    #X_LARGE is normally set to ~1000, but as long as it is very large its exact value
+    #is unimportant. Epsabs is set very small because I only care about epsrel.
+    Yinf_val,Yinf_error = quad(Yevolution_integrand,xi,X_LARGE,epsabs=1e-300,epsrel=1e-2,limit=400,args=(mx,sigmav,))
     if Yinf_val < 100*Yinf_error:
         print("Error in Ystep integration")
         print(Yinf_val,Yinf_error)
@@ -232,35 +246,18 @@ def relic_table(mass_arr,alpha_D=0.5,run_name="",func=Y_func):
 
     np.savetxt(run_name+"relic_density.dat",relic_tab)
 
-mv_arr=[6]+[10*mv+10 for mv in range(19)]+[25*mv+200 for mv in range(30)]+[100*mv+1000 for mv in range(20)]
+#mv_arr=[2]+[10*mv+10 for mv in range(19)]+[25*mv+200 for mv in range(30)]+[100*mv+1000 for mv in range(20)]
 
-mass_arr=[[mv/1000.0,mv/3000.0] for mv in mv_arr]
+mx_arr=[1,5,10,30,50,70,90,95,97,100,102,103,105,107,110,150,200,250,300]+[mx for mx in range(305,605,5)]+[mx for mx in range(625,1001,25)]
+
+#mass_arr=[[mv/1000.0,mv/3000.0] for mv in mv_arr]
+mass_arr=[[3*mx/1000.0,mx/1000.0] for mx in mx_arr]
 #mass_arr=[[0.006,0.002],[0.01,0.01/3.0],[0.03,0.01],[0.1,0.0333],[0.3,0.1],[1,.333],[3,1]]
 #mass_arr=[[0.01,0.01/3.0]]
 
 import time
 start = time.time()
-relic_table(mass_arr,run_name="Test_Run_Final")
+relic_table(mass_arr,run_name="Test_Run_Final2")
 end = time.time()
 print("Total Runtime={}".format(str(end-start)))
 
-
-#mvtest=0.006
-#mxtest=0.002
-
-#print(sigmav_integrand(2.7999e-5,0.5,1,mvtest,mxtest,2.88e-6))
-
-#print(sigmav(2.88e-6,0.5,1.0,mvtest,mxtest))
-#print(sigmav(0.01/20.0,0.5,1.0,0.03,0.01))
-#print(sigmav(0.1/20.0,0.5,1.0,0.3,0.1))
-#print(sigmav(1/20.0,0.5,1.0,3,1))
-
-#start = time.time()
-#print(Ysearch(2,0.5,mvtest,mxtest))
-#end = time.time()
-#print(end-start)
-
-#start = time.time()
-#print(Ysearch_euler(2,0.5,mvtest,mxtest))
-#end = time.time()
-#print(end-start)
