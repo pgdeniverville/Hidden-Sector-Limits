@@ -20,8 +20,8 @@ def table_of_limits(mass_arr,alpha_p=_alpha_p_set,run_name="",fill_val=1000,func
 	mass_arr = np.array(mass_arr)
 
 	#Relic Density, using the fast option.
-	print("Generating epsilons to reproduce relic density")
-	relic_tab=[func(mv,mx,alpha_p,gen_relic_dm_fast(mv,mx,alpha_p)) for mv,mx in mass_arr]
+	print("Run Relic_Density.py to generate relic density line")
+	#relic_tab=[func(mv,mx,alpha_p,gen_relic_dm_fast(mv,mx,alpha_p)) for mv,mx in mass_arr]
 
 	#Best limits of muon and electron g-2
 	print("Generating g-2 epsilon limits")
@@ -93,7 +93,7 @@ def table_of_limits(mass_arr,alpha_p=_alpha_p_set,run_name="",fill_val=1000,func
         #NA64_2018_func=interp1d(NA64_2018dat[:,0],NA64_2018dat[:,1],bounds_error=False,fill_value=fill_val)
 	#NA64_2018_tab=[func(mv,mx,alpha_p,NA64_2018_func(mv)) for mv,mx in mass_arr]
 
-	np.savetxt(run_name+"relic_density.dat",relic_tab)
+	#np.savetxt(run_name+"relic_density.dat",relic_tab)
 	np.savetxt(run_name+"precision_g_minus_2.dat",g_minus_2_tab)
 	np.savetxt(run_name+"precision_g_minus_2_electron.dat",g_minus_2_electron)
 	np.savetxt(run_name+"precision_g_minus_2_muon.dat",g_minus_2_muon)
@@ -102,7 +102,7 @@ def table_of_limits(mass_arr,alpha_p=_alpha_p_set,run_name="",fill_val=1000,func
 	#np.savetxt(run_name+"direct_det.dat",direct_det_tab)
 	np.savetxt(run_name+"babar.dat",babar_tab)
 	np.savetxt(run_name+"babar2017.dat",babar2017_tab)
-	np.savetxt(run_name+"relic_density.dat",relic_tab)
+	#np.savetxt(run_name+"relic_density.dat",relic_tab)
 	np.savetxt(run_name+"rare_decay.dat",rare_tab)
 	np.savetxt(run_name+"monojet.dat",monojet_tab)
 	np.savetxt(run_name+"kpipinvisk.dat",k_Vpi_tab)
