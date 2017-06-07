@@ -274,9 +274,10 @@ mass_arr=[[3*mx/1000.0,mx/1000.0] for mx in mx_arr]
 #sigk = lambda x,kappa: sigmav(0.001/x,0.5,kappa,0.003,0.001)
 #print(Omega_Cond_bracket(3e-6,2,0.001,sigk))
 
+make_sure_path_exists("output/")
 import time
 start = time.time()
-relic_table(mass_arr,run_name="Y3_")
+relic_table(mass_arr,run_name="output/Y3_")
 end = time.time()
 print("Total Runtime={}".format(str(end-start)))
 
