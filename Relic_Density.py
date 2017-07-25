@@ -127,7 +127,7 @@ def Gamma_V(mv, mx, kappa, alphaD):
 
 def sigma_dmdm_to_ll(alpha_D,kappa,mv,mx,ml,s):
     if s>4*ml**2:
-        return -math.pi*alpha_em*alpha_D*kappa**2*(ml**2-s)*math.sqrt(s-4*ml**2)*(s-4*mx**2)**1.5/(3*s*(s/4.0-mx**2)*            ((Gamma_V(mv,mx,kappa,alpha_D)*mv)**2+(mv**2-s)**2))
+        return -math.pi*alpha_em*alpha_D*kappa**2*(ml**2-s)*math.sqrt(s-4*ml**2)*(s-4*mx**2)**1.5/(3*s*(s/4.0-mx**2)*((Gamma_V(mv,mx,kappa,alpha_D)*mv)**2+(mv**2-s)**2))
     else:
         return 0.0
 

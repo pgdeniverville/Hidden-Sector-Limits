@@ -218,6 +218,8 @@ babar_interp = interp1d(babar_dat[:,0],babar_dat[:,1])
 babar2017_dat = np.loadtxt("data/babar2017_formatted.dat")
 babar2017_interp = interp1d(babar2017_dat[:,0],babar2017_dat[:,1])
 
+babar2017_min = min(babar2017_dat[:,0])
+
 # In[23]:
 
 def babar_func(mv,mx,alpha_p):
@@ -229,6 +231,14 @@ def babar_func(mv,mx,alpha_p):
         term = 1.0/math.sqrt(alpha_p)*term
     return term
 
+def babar_func2017(mv,mx,alpha_p):
+    if mv <= babar2017_min:
+        term = babar2017_interp(babar2017_min)
+    else:
+        term = babar2017_interp(mv)
+    if 2*mx>mv:
+        term = 1.0/math.sqrt(alpha_p)*term
+    return term
 
 #################################
 #Baryonic Limits from 1705.06726#

@@ -36,7 +36,7 @@ def table_of_limits(mass_arr,alpha_p=_alpha_p_set,run_name="",fill_val=1000,func
 	babar_tab=[func(mv,mx,alpha_p,babar_func(mv,mx,alpha_p)) for mv,mx in mass_arr]
 
 	print("Generating BaBar 2017 limits")
-	babar2017_tab=[func(mv,mx,alpha_p,babar2017_interp(mv)) for mv,mx in mass_arr]
+	babar2017_tab=[func(mv,mx,alpha_p,babar_func2017(mv,mx,alpha_p)) for mv,mx in mass_arr]
 
         print("Generating limits from rare decays (J\Psi->V)")
 	rare_tab = [func(mv,mx,alpha_p,rarelimit(mv,mx,alpha_p)) for mv,mx in mass_arr]
@@ -122,7 +122,7 @@ def table_of_limits(mass_arr,alpha_p=_alpha_p_set,run_name="",fill_val=1000,func
 #marr=[[mv/1000.0,mx/1000.0] for mv in range(10,1000) for mx in range(1,mv/2,1)]
 #marr=[[mv/1000.0,mx/1000.0] for mv in range(10,100) for mx in range(1,mv/2,1)]
 
-marr=[[3*mx/1000.0,mx/1000.0] for mx in range(1,1000)]
+marr=[[0.001,0.001/3.0]]+[[3*mx/1000.0,mx/1000.0] for mx in range(1,1000)]
 
 make_sure_path_exists("output/")
 
@@ -130,6 +130,6 @@ make_sure_path_exists("output/")
 table_of_limits(marr,run_name="output/y3_0.1_")
 
 mxset=5
-runname="output/mx"+masstext(mxset/1000.0)+"_"
-marr2=[[mv/1000.0,mxset/1000.0] for mv in range(mxset,4000)]
-table_of_limits(marr2,run_name=runname,func=kappa,alpha_p=0.1)
+#runname="output/mx"+masstext(mxset/1000.0)+"_"
+#marr2=[[mv/1000.0,mxset/1000.0] for mv in range(mxset,4000)]
+#table_of_limits(marr2,run_name=runname,func=kappa,alpha_p=0.1)
