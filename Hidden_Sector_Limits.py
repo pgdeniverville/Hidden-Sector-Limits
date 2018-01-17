@@ -33,10 +33,10 @@ def table_of_limits(mass_arr,alpha_p=_alpha_p_set,run_name="",fill_val=1000,func
 	g_muon_fav_high_tab = [func(mv,mx,alpha_p,kappa_fav_high(mv)) for mv,mx in mass_arr]
 
 	print("Generating BaBar limits")
-	babar_tab=[func(mv,mx,alpha_p,babar_func(mv,mx,alpha_p)) for mv,mx in mass_arr]
+	babar_tab=[func(mv,mx,alpha_p,babar_func(mv,mx,alpha_p,fill_value=fill_val)) for mv,mx in mass_arr]
 
 	print("Generating BaBar 2017 limits")
-	babar2017_tab=[func(mv,mx,alpha_p,babar_func2017(mv,mx,alpha_p)) for mv,mx in mass_arr]
+	babar2017_tab=[func(mv,mx,alpha_p,babar_func2017(mv,mx,alpha_p,fill_value=fill_val)) for mv,mx in mass_arr]
 
         print("Generating limits from rare decays (J\Psi->V)")
 	rare_tab = [func(mv,mx,alpha_p,rarelimit(mv,mx,alpha_p)) for mv,mx in mass_arr]
@@ -64,15 +64,13 @@ def table_of_limits(mass_arr,alpha_p=_alpha_p_set,run_name="",fill_val=1000,func
 	print("Generating E137 limits - Note that this currently does not use the supplied func, as odd c runtime errors are encountered. Uncomment the following commented lines if another function is required, but test carefully!")
 	#e137dat=griddata(E137tab[:,0:2],E137tab[:,2],mass_arr,fill_value=fill_val,method='linear')
 	e137_vals= np.array([func(mv,mx,alpha_p,(k4alphap/alpha_p)**0.25) for mv,mx,k4alphap in E137tab])
-	e137dat = griddata(E137tab[:,0:2],e137_vals[:,2],mass_arr,fill_value=fill_val,method='linear')
+	E137_tab = griddata(E137tab[:,0:2],e137_vals,mass_arr,fill_value=fill_val,method='linear')
 
-	E137_tab = zip(mass_arr[:,0],mass_arr[:,1],e137dat)
 
 	#LSND
 	print("Generating LSND limits")
 	lsnd_vals= np.array([func(mv,mx,alpha_p,(k4alphap/alpha_p)**0.25) for mv,mx,k4alphap in LSNDtab])
-	LSNDdat = griddata(LSNDtab[:,0:2],lsnd_vals[:,2],mass_arr,fill_value=fill_val,method='linear')
-	LSND_tab = zip(mass_arr[:,0],mass_arr[:,1],LSNDdat)
+	LSND_tab = griddata(LSNDtab[:,0:2],lsnd_vals,mass_arr,fill_value=fill_val,method='linear')
 
         print("Generating limits from Direct Detection")
 	direct_det_tab = [func(mv,mx,alpha_p,sigman_to_kappa(Direct_Det(mx),mv,mx,alpha_p)) for mv,mx in mass_arr]
@@ -80,7 +78,7 @@ def table_of_limits(mass_arr,alpha_p=_alpha_p_set,run_name="",fill_val=1000,func
         print("Generating limits from Direct Detection - Electron")
         direct_det_e_tab = [func(mv,mx,alpha_p,sigmae_to_kappa(xenon10efunc(mx),mv,mx,alpha_p)) for mv,mx in mass_arr]
 
-	print("Generating NA64 limits")
+        print("Generating NA64 (2017, https://arxiv.org/abs/1710.00971) limits")
         NA64_func=interp1d(NA64dat[:,0],NA64dat[:,1],bounds_error=False,fill_value=fill_val)
 	NA64_tab=[func(mv,mx,alpha_p,NA64_func(mv)) for mv,mx in mass_arr]
 
@@ -122,13 +120,17 @@ def table_of_limits(mass_arr,alpha_p=_alpha_p_set,run_name="",fill_val=1000,func
 #marr=[[mv/1000.0,mx/1000.0] for mv in range(10,1000) for mx in range(1,mv/2,1)]
 #marr=[[mv/1000.0,mx/1000.0] for mv in range(10,100) for mx in range(1,mv/2,1)]
 
-marr=[[0.001,0.001/3.0]]+[[3*mx/1000.0,mx/1000.0] for mx in range(1,1000)]
+marr=[[0.001,0.001/3.0]]+[[3*mx/1000.0,mx/1000.0] for mx in range(1,1000)]+[[3*mx/1000.0,mx/1000.0] for mx in range(1000,3050,50)]
 
 make_sure_path_exists("output/")
 
 #Masses are quite large, so this will take awhile.
 table_of_limits(marr,run_name="output/y3_0.1_")
 
+#def sigma_e_func(mv,mx,alpha_p,eps):
+#    return [mv,mx,sigmae(mv,mx,alpha_p,eps)]
+
+#table_of_limits(marr,func=sigma_e_func,run_name="output/sige3_0.1_")
 mxset=5
 #runname="output/mx"+masstext(mxset/1000.0)+"_"
 #marr2=[[mv/1000.0,mxset/1000.0] for mv in range(mxset,4000)]

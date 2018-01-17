@@ -212,6 +212,7 @@ zprimedat=np.loadtxt("data/zprime.dat")
 
 babar_dat=np.loadtxt("data/babar.dat")
 babar_interp = interp1d(babar_dat[:,0],babar_dat[:,1])
+babar_max = max(babar_dat[:,0])
 
 #Sensitivity from BaBar analysis https://arxiv.org/abs/1702.03327
 #Should maybe add a branching ratio to this, but normally Br(V->invis)~1 for our parameters
@@ -219,21 +220,25 @@ babar2017_dat = np.loadtxt("data/babar2017_formatted.dat")
 babar2017_interp = interp1d(babar2017_dat[:,0],babar2017_dat[:,1])
 
 babar2017_min = min(babar2017_dat[:,0])
-
+babar2017_max = max(babar2017_dat[:,0])
 # In[23]:
 
-def babar_func(mv,mx,alpha_p):
+def babar_func(mv,mx,alpha_p,fill_value=1000):
     if mv < 0.2:
         term = babar_interp(0.2)
+    elif mv > babar_max:
+        term= fill_value
     else:
         term = babar_interp(mv)
     if 2*mx>mv:
         term = 1.0/math.sqrt(alpha_p)*term
     return term
 
-def babar_func2017(mv,mx,alpha_p):
+def babar_func2017(mv,mx,alpha_p,fill_value=1000):
     if mv <= babar2017_min:
         term = babar2017_interp(babar2017_min)
+    elif mv >= babar2017_max:
+        term = fill_value
     else:
         term = babar2017_interp(mv)
     if 2*mx>mv:
@@ -295,12 +300,14 @@ invispionbaryonicdat = np.loadtxt("data/invis_pion_baryonic.dat")
 
 #https://arxiv.org/abs/1610.02988
 #These limits are only valid in the case that V->\chi\bar\chi is dominant decay channel
-NA64dat = np.loadtxt("data/NA64_formatted.dat")
+#NA64dat = np.loadtxt("data/NA64_formatted.dat")
 
+#https://arxiv.org/abs/1710.00971
+NA64dat = np.loadtxt("data/NA64_2017_formatted.dat")
 #Projections from Physics Beyond Colliders Working Group meeting
-NA64_2016dat = np.loadtxt("data/NA64_2016_formatted.dat")
-NA64_2017dat = np.loadtxt("data/NA64_2017_formatted.dat")
-NA64_2018dat = np.loadtxt("data/NA64_2018_formatted.dat")
+#NA64_2016dat = np.loadtxt("data/NA64_2016_formatted.dat")
+#NA64_2017dat = np.loadtxt("data/NA64_2017_formatted.dat")
+#NA64_2018dat = np.loadtxt("data/NA64_2018_formatted.dat")
 
 ######
 #E137#
