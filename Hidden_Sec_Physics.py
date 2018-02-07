@@ -350,7 +350,12 @@ Direct_Det_Func=[interp1d(np.array(tab)[:,0],np.array(tab)[:,1],bounds_error=Fal
 def Direct_Det(mx):
     return min([func(mx) for func in Direct_Det_Func])
 
-#arxiv:1206.2644v1.pdf
+#arxiv:.pdf
 #See also https://arxiv.org/pdf/1505.00011.pdf for comparison
-xenon10e_dat = np.loadtxt("data/xenon10e_formatted.csv",delimiter=",")
+xenon10e_dat = np.loadtxt("data/xenon10e_2017_formatted.csv",delimiter=",")
 xenon10efunc=interp1d(xenon10e_dat[:,0],xenon10e_dat[:,1],bounds_error=False,fill_value=1e-15)
+xenon100e_dat = np.loadtxt("data/xenon100e_2017_formatted.csv",delimiter=",")
+xenon100efunc=interp1d(xenon100e_dat[:,0],xenon100e_dat[:,1],bounds_error=False,fill_value=1e-15)
+#arxiv:1206.2644v1.pdf
+#xenon10e_dat = np.loadtxt("data/xenon10e_formatted.csv",delimiter=",")
+#xenon10efunc=interp1d(xenon10e_dat[:,0],xenon10e_dat[:,1],bounds_error=False,fill_value=1e-15)

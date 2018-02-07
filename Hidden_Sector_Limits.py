@@ -33,10 +33,10 @@ def table_of_limits(mass_arr,alpha_p=_alpha_p_set,run_name="",fill_val=1000,func
 	g_muon_fav_high_tab = [func(mv,mx,alpha_p,kappa_fav_high(mv)) for mv,mx in mass_arr]
 
 	print("Generating BaBar limits")
-	babar_tab=[func(mv,mx,alpha_p,babar_func(mv,mx,alpha_p,fill_value=fill_val)) for mv,mx in mass_arr]
+        babar_tab=[func(mv,mx,alpha_p,babar_func(mv,mx,alpha_p,fill_value=fill_val)) for mv,mx in mass_arr]
 
-	print("Generating BaBar 2017 limits")
-	babar2017_tab=[func(mv,mx,alpha_p,babar_func2017(mv,mx,alpha_p,fill_value=fill_val)) for mv,mx in mass_arr]
+        print("Generating BaBar 2017 limits")
+        babar2017_tab=[func(mv,mx,alpha_p,babar_func2017(mv,mx,alpha_p,fill_value=fill_val)) for mv,mx in mass_arr]
 
         print("Generating limits from rare decays (J\Psi->V)")
 	rare_tab = [func(mv,mx,alpha_p,rarelimit(mv,mx,alpha_p)) for mv,mx in mass_arr]
@@ -76,7 +76,7 @@ def table_of_limits(mass_arr,alpha_p=_alpha_p_set,run_name="",fill_val=1000,func
 	direct_det_tab = [func(mv,mx,alpha_p,sigman_to_kappa(Direct_Det(mx),mv,mx,alpha_p)) for mv,mx in mass_arr]
 
         print("Generating limits from Direct Detection - Electron")
-        direct_det_e_tab = [func(mv,mx,alpha_p,sigmae_to_kappa(xenon10efunc(mx),mv,mx,alpha_p)) for mv,mx in mass_arr]
+        direct_det_e_tab = [func(mv,mx,alpha_p,min(sigmae_to_kappa(xenon10efunc(mx),mv,mx,alpha_p),sigmae_to_kappa(xenon100efunc(mx),mv,mx,alpha_p))) for mv,mx in mass_arr]
 
         print("Generating NA64 (2017, https://arxiv.org/abs/1710.00971) limits")
         NA64_func=interp1d(NA64dat[:,0],NA64dat[:,1],bounds_error=False,fill_value=fill_val)
