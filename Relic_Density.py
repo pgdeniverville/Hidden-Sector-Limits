@@ -93,11 +93,13 @@ with open('data/rratio.dat','r') as infile:
     rratio1=infile.read()
     rratio_rough = rratio1.splitlines()
     rratio_clean=np.array(list(format_rratio(rratio_rough)),dtype=float)
-    f_rratio = interp1d(rratio_clean[:,0],rratio_clean[:,1],fill_value=(rratio_clean[0,1],rratio_clean[-1,1]),bounds_error=False)
+    f_rratio = interp1d(rratio_clean[:,0],rratio_clean[:,1],fill_value=(0,rratio_clean[-1,1]),bounds_error=True)
 
 def rratio(s):
     if s<rratio_clean[0,0]:
         return 0
+    elif s>rratio_clean[-1,0]:
+        return rratio_clean[-1,1]
     else:
         return f_rratio(s)
 
