@@ -154,11 +154,6 @@ def kappa_electron_lim(mv):
 
 
 
-
-#Direct Detection Limits will go here. Eventually.
-
-
-
 ################
 #Monojet Limits#
 ################
