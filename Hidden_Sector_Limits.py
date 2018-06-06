@@ -125,14 +125,14 @@ def table_of_limits(mass_arr,alpha_p=_alpha_p_set,run_name="",fill_val=1000,func
 #marr=[[mv/1000.0,mx/1000.0] for mv in range(10,1000) for mx in range(1,mv/2,1)]
 #marr=[[mv/1000.0,mx/1000.0] for mv in range(10,100) for mx in range(1,mv/2,1)]
 
-#marr=[[0.001,0.001/3.0]]+[[3*mx/1000.0,mx/1000.0] for mx in range(1,1000)]+[[3*mx/1000.0,mx/1000.0] for mx in range(1000,3050,50)]
+marr=[[0.001,0.001/3.0]]+[[3*mx/1000.0,mx/1000.0] for mx in range(1,1000)]+[[3*mx/1000.0,mx/1000.0] for mx in range(1000,3050,50)]
 
-marr=[[0.001,0.001/5.0]]+[[5*mx/1000.0,mx/1000.0] for mx in range(1,1000)]+[[5*mx/1000.0,mx/1000.0] for mx in range(1000,2000,50)]
+#marr=[[0.001,0.001/5.0]]+[[5*mx/1000.0,mx/1000.0] for mx in range(1,1000)]+[[5*mx/1000.0,mx/1000.0] for mx in range(1000,2000,50)]
 
 make_sure_path_exists("output/")
 
 #Masses are quite large, so this will take awhile.
-table_of_limits(marr,run_name="output/y5_0.5_")
+table_of_limits(marr,run_name="output/y3_0.5_")
 
 #def sigma_e_func(mv,mx,alpha_p,eps):
 #    return [mv,mx,sigmae(mv,mx,alpha_p,eps)]
