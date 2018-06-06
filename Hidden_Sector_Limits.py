@@ -113,6 +113,8 @@ def table_of_limits(mass_arr,alpha_p=_alpha_p_set,run_name="",fill_val=1000,func
 	np.savetxt(run_name+"e137lim.dat",E137_tab)
 	np.savetxt(run_name+"direct_det.dat",direct_det_tab)
 	np.savetxt(run_name+"direct_det_e.dat",direct_det_e_tab)
+	np.savetxt(run_name+"sensei_e.dat",SENSEIe_tab)
+	np.savetxt(run_name+"scdms_e.dat",SCDMSe_tab)
 	np.savetxt(run_name+"NA64.dat",NA64_tab)
 	#np.savetxt(run_name+"NA64_2016.dat",NA64_2016_tab)
 	#np.savetxt(run_name+"NA64_2017.dat",NA64_2017_tab)
