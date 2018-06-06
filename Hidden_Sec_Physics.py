@@ -114,7 +114,7 @@ def GammaVB(alpha_B, kappa, mv, mx):
 dm_beta=0.3
 def sigma_ann_lepton(alphap,kappa,mv,mx,mlepton):
     if Epart(dm_beta,mx)>mlepton:
-        return 8.0*math.pi/3*alphap*alpha_em*kappa**2/((4*Epart(dm_beta,mx)**2-mv**2)**2+mv**2*GammaV(alphap,kappa,mv,mx)**2)*    (2*Epart(dm_beta,mx)**2+mlepton**2)*dm_beta**2*math.sqrt(1-mlepton**2/Epart(dm_beta,mx)**2)
+        return 8.0*math.pi/3*alphap*alpha_em*kappa**2/((4*Epart(dm_beta,mx)**2-mv**2)**2+mv**2*GammaV(alphap,kappa,mv,mx)**2)*(2*Epart(dm_beta,mx)**2+mlepton**2)*dm_beta**2*math.sqrt(1-mlepton**2/Epart(dm_beta,mx)**2)
     return 0
 def sigma_annihilation_dm(kappa,alphap,mv,mx):
     return sigma_ann_lepton(alphap,kappa,mv,mx,melec)+sigma_ann_lepton(alphap,kappa,mv,mx,mmuon)*(1+rratio(2*Epart(dm_beta,mx)))
@@ -353,4 +353,10 @@ xenon100e_dat = np.loadtxt("data/xenon100e_2017_formatted.csv",delimiter=",")
 xenon100efunc=interp1d(xenon100e_dat[:,0],xenon100e_dat[:,1],bounds_error=False,fill_value=1e-15)
 #arxiv:1206.2644v1.pdf
 #xenon10e_dat = np.loadtxt("data/xenon10e_formatted.csv",delimiter=",")
-#xenon10efunc=interp1d(xenon10e_dat[:,0],xenon10e_dat[:,1],bounds_error=False,fill_value=1e-15)
+#xenon10e_dat = np.loadtxt("data/xenon10e_2017_formatted.csv",delimiter=",")
+#1804.10697
+SCDMSe_dat = np.loadtxt("data/CDMS_electron_2018_formatted.dat",delimiter=" ")
+SCDMSefunc=interp1d(SCDMSe_dat[:,0],SCDMSe_dat[:,1],bounds_error=False,fill_value=1e-15)
+#1804.00088
+SENSEIe_dat = np.loadtxt("data/SENSEI2018_formatted.dat",delimiter=" ")
+SENSEIefunc=interp1d(SENSEIe_dat[:,0],SENSEIe_dat[:,1],bounds_error=False,fill_value=1e-15)

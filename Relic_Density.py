@@ -270,7 +270,7 @@ def relic_table(mass_arr,alpha_D=0.5,run_name="",func=Y_func):
 mx_arr=[1,5,10,30,50,70,90,95,97,100,102,103,105,107,110,150,200,250,300]+[mx for mx in range(305,605,5)]+[mx for mx in range(625,1001,25)]
 
 #mass_arr=[[mv/1000.0,mv/3000.0] for mv in mv_arr]
-mass_arr=[[7*mx/1000.0,mx/1000.0] for mx in mx_arr]
+mass_arr=[[5*mx/1000.0,mx/1000.0] for mx in mx_arr]
 #mass_arr=[[0.006,0.002],[0.01,0.01/3.0],[0.03,0.01],[0.1,0.0333],[0.3,0.1],[1,.333],[3,1]]
 #mass_ar=[[0.01,0.01/3.0]]
 #mass_arr=[[2,0.65]]
@@ -280,7 +280,7 @@ mass_arr=[[7*mx/1000.0,mx/1000.0] for mx in mx_arr]
 make_sure_path_exists("output/")
 import time
 start = time.time()
-relic_table(mass_arr,run_name="output/Y3_")
+relic_table(mass_arr,run_name="output/Y5_")
 end = time.time()
 print("Total Runtime={}".format(str(end-start)))
 

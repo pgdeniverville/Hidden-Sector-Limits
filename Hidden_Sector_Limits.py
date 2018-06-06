@@ -78,6 +78,9 @@ def table_of_limits(mass_arr,alpha_p=_alpha_p_set,run_name="",fill_val=1000,func
         print("Generating limits from Direct Detection - Electron")
         direct_det_e_tab = [func(mv,mx,alpha_p,min(sigmae_to_kappa(xenon10efunc(mx),mv,mx,alpha_p),sigmae_to_kappa(xenon100efunc(mx),mv,mx,alpha_p))) for mv,mx in mass_arr]
 
+        SCDMSe_tab= [func(mv,mx,alpha_p,sigmae_to_kappa(SCDMSefunc(mx),mv,mx,alpha_p)) for mv,mx in mass_arr]
+
+        SENSEIe_tab= [func(mv,mx,alpha_p,sigmae_to_kappa(SENSEIefunc(mx),mv,mx,alpha_p)) for mv,mx in mass_arr]
         print("Generating NA64 (2017, https://arxiv.org/abs/1710.00971) limits")
         NA64_func=interp1d(NA64dat[:,0],NA64dat[:,1],bounds_error=False,fill_value=fill_val)
 	NA64_tab=[func(mv,mx,alpha_p,NA64_func(mv)) for mv,mx in mass_arr]
@@ -120,12 +123,14 @@ def table_of_limits(mass_arr,alpha_p=_alpha_p_set,run_name="",fill_val=1000,func
 #marr=[[mv/1000.0,mx/1000.0] for mv in range(10,1000) for mx in range(1,mv/2,1)]
 #marr=[[mv/1000.0,mx/1000.0] for mv in range(10,100) for mx in range(1,mv/2,1)]
 
-marr=[[0.001,0.001/3.0]]+[[3*mx/1000.0,mx/1000.0] for mx in range(1,1000)]+[[3*mx/1000.0,mx/1000.0] for mx in range(1000,3050,50)]
+#marr=[[0.001,0.001/3.0]]+[[3*mx/1000.0,mx/1000.0] for mx in range(1,1000)]+[[3*mx/1000.0,mx/1000.0] for mx in range(1000,3050,50)]
+
+marr=[[0.001,0.001/5.0]]+[[5*mx/1000.0,mx/1000.0] for mx in range(1,1000)]+[[5*mx/1000.0,mx/1000.0] for mx in range(1000,2000,50)]
 
 make_sure_path_exists("output/")
 
 #Masses are quite large, so this will take awhile.
-table_of_limits(marr,run_name="output/y3_0.5_")
+table_of_limits(marr,run_name="output/y5_0.5_")
 
 #def sigma_e_func(mv,mx,alpha_p,eps):
 #    return [mv,mx,sigmae(mv,mx,alpha_p,eps)]
