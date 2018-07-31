@@ -12,7 +12,7 @@ change dramatically. Use at your own risk!
 """
 
 #Default value of alpha_p to use
-_alpha_p_set = 0.5
+_alpha_p_set = 0.05
 
 #Takes an array of masses mass_arr and generates some experimental limits for kinetically mixed hidden sector dark matter. These limits are written to text files.
 #func can be any function that accepts arguments in the form (mv,mx,alpha_p,kappa).
@@ -61,16 +61,27 @@ def table_of_limits(mass_arr,alpha_p=_alpha_p_set,run_name="",fill_val=1000,func
 	zprime_tab = [func(mv,mx,alpha_p,zprime_func(mv)) for mv,mx in mass_arr]
 
 	#E137
-	print("Generating E137 limits - Note that this currently does not use the supplied func, as odd c runtime errors are encountered. Uncomment the following commented lines if another function is required, but test carefully!")
+	print("Generating E137 limits")
 	#e137dat=griddata(E137tab[:,0:2],E137tab[:,2],mass_arr,fill_value=fill_val,method='linear')
 	e137_vals= np.array([func(mv,mx,alpha_p,(k4alphap/alpha_p)**0.25) for mv,mx,k4alphap in E137tab])
 	E137_tab = griddata(E137tab[:,0:2],e137_vals,mass_arr,fill_value=fill_val,method='linear')
 
 
-	#LSND
+        #MiniBooNE
+        print("Generating MiniBooNE limits")
+        miniboone_N_vals= np.array([func(mv,mx,alpha_p,(k4alphap/alpha_p)**0.25) for mv,mx,k4alphap in MiniBooNE_N_tab])
+        miniboone_n_tab = griddata(MiniBooNE_N_tab[:,0:2],miniboone_N_vals,mass_arr,method='linear')
+        miniboone_n_tab = [x for x in miniboone_n_tab if not np.isnan(x[2])]
+
+        miniboone_e_vals= np.array([func(mv,mx,alpha_p,(k4alphap/alpha_p)**0.25) for mv,mx,k4alphap in MiniBooNE_e_tab])
+        miniboone_e_tab = griddata(MiniBooNE_e_tab[:,0:2],miniboone_e_vals,mass_arr,method='linear')
+        miniboone_e_tab = [x for x in miniboone_e_tab if not np.isnan(x[2])]
+
+        #LSND
 	print("Generating LSND limits")
 	lsnd_vals= np.array([func(mv,mx,alpha_p,(k4alphap/alpha_p)**0.25) for mv,mx,k4alphap in LSNDtab])
-	LSND_tab = griddata(LSNDtab[:,0:2],lsnd_vals,mass_arr,fill_value=fill_val,method='linear')
+	LSND_tab = griddata(LSNDtab[:,0:2],lsnd_vals,mass_arr,method='linear')
+        LSND_tab = [x for x in LSND_tab if not np.isnan(x[2])]
 
         print("Generating limits from Direct Detection")
 	direct_det_tab = [func(mv,mx,alpha_p,sigman_to_kappa(Direct_Det(mx),mv,mx,alpha_p)) for mv,mx in mass_arr]
@@ -110,6 +121,8 @@ def table_of_limits(mass_arr,alpha_p=_alpha_p_set,run_name="",fill_val=1000,func
 	np.savetxt(run_name+"invispion.dat",invispion_tab)
 	np.savetxt(run_name+"zprime.dat",zprime_tab)
 	np.savetxt(run_name+"lsndlim.dat",LSND_tab)
+	np.savetxt(run_name+"miniboone_n_lim.dat",miniboone_n_tab)
+	np.savetxt(run_name+"miniboone_e_lim.dat",miniboone_e_tab)
 	np.savetxt(run_name+"e137lim.dat",E137_tab)
 	np.savetxt(run_name+"direct_det.dat",direct_det_tab)
 	np.savetxt(run_name+"direct_det_e.dat",direct_det_e_tab)
@@ -132,7 +145,7 @@ marr=[[0.001,0.001/3.0]]+[[3*mx/1000.0,mx/1000.0] for mx in range(1,1000)]+[[3*m
 make_sure_path_exists("output/")
 
 #Masses are quite large, so this will take awhile.
-table_of_limits(marr,run_name="output/y3_0.5_")
+table_of_limits(marr,run_name="output/y3_0.05_")
 
 #def sigma_e_func(mv,mx,alpha_p,eps):
 #    return [mv,mx,sigmae(mv,mx,alpha_p,eps)]

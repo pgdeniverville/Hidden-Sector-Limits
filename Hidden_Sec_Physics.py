@@ -317,6 +317,15 @@ E137tab = np.loadtxt("data/E137-kappa4XalphaD-mV-mX.csv",delimiter=',')
 #See arXiv:1107.4580 and arXiv:1411.1055.
 LSNDtab = np.loadtxt("data/lsnd.dat",delimiter='\t')
 
+###########
+#MiniBooNE#
+##########
+#See arXiv:1807.06137
+MiniBooNE_N_tab = np.loadtxt("data/miniboone_full_nucleon_timing_vector_portal_cl_epsilon4alphaD.txt",delimiter='\t')
+MiniBooNE_e_tab = np.loadtxt("data/miniboone_electron_timing_vector_portal_cl_epsilon4alphaD.txt",delimiter='\t')
+
+
+
 #Direct_Detection_Limits
 #1105.5191
 xenon10_dat = np.loadtxt("data/xenon10.dat")
