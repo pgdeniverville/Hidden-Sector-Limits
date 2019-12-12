@@ -12,7 +12,7 @@ change dramatically. Use at your own risk!
 """
 
 #Default value of alpha_p to use
-_alpha_p_set = 0.05
+_alpha_p_set = 0.1
 
 #Takes an array of masses mass_arr and generates some experimental limits for kinetically mixed hidden sector dark matter. These limits are written to text files.
 #func can be any function that accepts arguments in the form (mv,mx,alpha_p,kappa).
@@ -92,7 +92,7 @@ def table_of_limits(mass_arr,alpha_p=_alpha_p_set,run_name="",fill_val=1000,func
         SCDMSe_tab= [func(mv,mx,alpha_p,sigmae_to_kappa(SCDMSefunc(mx),mv,mx,alpha_p)) for mv,mx in mass_arr]
 
         SENSEIe_tab= [func(mv,mx,alpha_p,sigmae_to_kappa(SENSEIefunc(mx),mv,mx,alpha_p)) for mv,mx in mass_arr]
-        print("Generating NA64 (2017, https://arxiv.org/abs/1710.00971) limits")
+        print("Generating NA64 (2019, https://arxiv.org/abs/1906.00176) limits")
         NA64_func=interp1d(NA64dat[:,0],NA64dat[:,1],bounds_error=False,fill_value=fill_val)
 	NA64_tab=[func(mv,mx,alpha_p,NA64_func(mv)) for mv,mx in mass_arr]
 
@@ -145,13 +145,13 @@ marr=[[0.001,0.001/3.0]]+[[3*mx/1000.0,mx/1000.0] for mx in range(1,1000)]+[[3*m
 make_sure_path_exists("output/")
 
 #Masses are quite large, so this will take awhile.
-table_of_limits(marr,run_name="output/y3_0.05_")
+table_of_limits(marr,run_name="output/y3_0.1_")
 
 #def sigma_e_func(mv,mx,alpha_p,eps):
 #    return [mv,mx,sigmae(mv,mx,alpha_p,eps)]
 
 #table_of_limits(marr,func=sigma_e_func,run_name="output/sige3_0.1_")
-mxset=5
+#mxset=5
 #runname="output/mx"+masstext(mxset/1000.0)+"_"
 #marr2=[[mv/1000.0,mxset/1000.0] for mv in range(mxset,4000)]
 #table_of_limits(marr2,run_name=runname,func=kappa,alpha_p=0.1)

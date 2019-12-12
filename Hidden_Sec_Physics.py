@@ -298,7 +298,12 @@ invispionbaryonicdat = np.loadtxt("data/invis_pion_baryonic.dat")
 #NA64dat = np.loadtxt("data/NA64_formatted.dat")
 
 #https://arxiv.org/abs/1710.00971
-NA64dat = np.loadtxt("data/NA64_2017_formatted.dat")
+#NA64dat = np.loadtxt("data/NA64_2017_formatted.dat")
+#https://arxiv.org/abs/1906.00176
+NA64dat = np.loadtxt("data/NA64_2019_formatted.dat")
+#NA64dat = np.loadtxt("data/NA64_2019_aD0.5_formatted.dat")
+#NA64dat = math.sqrt(NA64dat/0.5*3**4)
+
 #Projections from Physics Beyond Colliders Working Group meeting
 #NA64_2016dat = np.loadtxt("data/NA64_2016_formatted.dat")
 #NA64_2017dat = np.loadtxt("data/NA64_2017_formatted.dat")
@@ -332,22 +337,35 @@ xenon10_dat = np.loadtxt("data/xenon10.dat")
 #1207.5988
 xenon100_dat1 = np.loadtxt("data/xenon100_1.dat")
 xenon100_dat2 = np.loadtxt("data/xenon100_2.dat")
+#1705.06655
+xenon1T_dat = np.loadtxt("data/1705.06655.xenon1t.dat")
+#Not sure which this is from.
+xenon1T_S2_dat = np.loadtxt("data/XENON1t_S2Only_2019.dat")
+#1802.06994
+darkside50_dat=np.loadtxt("1802.06994.Darkside50.dat")
 #1105.5191
 damic_dat=np.loadtxt("data/damic.dat")
 #arXiv:1509.01515
 cressII2015_dat_unscaled = np.loadtxt("data/cressII2015.dat")
 cressII2015_dat = zip(cressII2015_dat_unscaled[:,0],cressII2015_dat_unscaled[:,1]*1e-36)
+#arXiv:1711.07692
+cresstIII2017_dat = np.loadtxt("data/1711.07692.cresst-iii.dat")
+cresstIII2017_dat = zip(cresstIII2017_dat[:,0],cresstIII2017_dat[:,1]*1e-36)
 #arXiv:1402.7137
-with open("data/SuperCDMS.dat") as infile:
-    scdms1=infile.read()
-    scdms2=[line.split() for line in scdms1.split(';')]
-    SuperCDMS_dat=[[float(x),float(y)] for x,y in scdms2]
+#with open("data/SuperCDMS.dat") as infile:
+#    scdms1=infile.read()
+#    scdms2=[line.split() for line in scdms1.split(';')]
+#    SuperCDMS_dat=[[float(x),float(y)] for x,y in scdms2]
+SuperCDMS_dat=np.loadtxt("data/SuperCDMS.dat")
 #arXiv:1509.02448
 CDMSlite_dat = np.loadtxt("data/cdmslite2015.dat")
 #1512.03506
 LUX_dat_unscaled = np.loadtxt("data/lux2015.dat")
 LUX_dat = zip(LUX_dat_unscaled[:,0],LUX_dat_unscaled[:,1]*1e-45)
-Direct_Det_Tab =[xenon10_dat,xenon100_dat1,xenon100_dat2,damic_dat,cressII2015_dat,SuperCDMS_dat,CDMSlite_dat,LUX_dat]
+#1707.06749
+cresstIIsurface=np.loadtxt("data/cresst_II_surface.csv",delimiter=',')
+cresstIIsurface_dat = zip(cresstIIsurface[:,0],cresstIIsurface[:,1]*1e-36)
+Direct_Det_Tab =[xenon10_dat,xenon100_dat1,xenon100_dat2,damic_dat,cressII2015_dat,SuperCDMS_dat,CDMSlite_dat,LUX_dat,cresstIIsurface_dat,cresstIII2017_dat,xenon1T_dat,xenon1T_S2_dat,darkside50_dat]
 
 Direct_Det_Func=[interp1d(np.array(tab)[:,0],np.array(tab)[:,1],bounds_error=False,fill_value=1e-25) for tab in Direct_Det_Tab]
 
