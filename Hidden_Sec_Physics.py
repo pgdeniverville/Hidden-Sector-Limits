@@ -246,13 +246,13 @@ def babar_func2017(mv,mx,alpha_p,fill_value=1000):
 #These largely eliminate the non-anomaly-free version of
 #the model. I expect an anomaly-free version will need to
 #be found for the model to be viable.
-anomalon_1705_06726_dat = np.loadtxt("data/Anomalon_formatted.dat")
+anomalon_1705_06726_dat = np.loadtxt("data/1705.06726/Anomalon_formatted.dat")
 anomalon_1705_06726_dat[:,1]=anomalon_1705_06726_dat[:,1]**2/4.0/math.pi
-BtoKX_1705_06726_dat = np.loadtxt("data/1705.06726.BtoKX_formatted.dat")
+BtoKX_1705_06726_dat = np.loadtxt("data/1705.06726/BtoKX_formatted.dat")
 BtoKX_1705_06726_dat[:,1]=BtoKX_1705_06726_dat[:,1]**2/4.0/math.pi
-ZtogammaX_1705_06726_dat = np.loadtxt("data/1705.06726.ZtogammaX_formatted.dat")
+ZtogammaX_1705_06726_dat = np.loadtxt("data/1705.06726/ZtogammaX_formatted.dat")
 ZtogammaX_1705_06726_dat[:,1]=ZtogammaX_1705_06726_dat[:,1]**2/4.0/math.pi
-KtopiX_1705_06726_dat = np.loadtxt("data/1705.06726.KtopiX_formatted.dat")
+KtopiX_1705_06726_dat = np.loadtxt("data/1705.06726/KtopiX_formatted.dat")
 KtopiX_1705_06726_dat[:,1]=KtopiX_1705_06726_dat[:,1]**2/4.0/math.pi
 
 #############################
@@ -340,9 +340,9 @@ xenon100_dat2 = np.loadtxt("data/xenon100_2.dat")
 #1705.06655
 xenon1T_dat = np.loadtxt("data/1705.06655.xenon1t.dat")
 #Not sure which this is from.
-xenon1T_S2_dat = np.loadtxt("data/XENON1t_S2Only_2019.dat")
+xenon1T_S2_dat = np.loadtxt("data/XENON1T_S2Only_2019.dat")
 #1802.06994
-darkside50_dat=np.loadtxt("1802.06994.Darkside50.dat")
+darkside50_dat=np.loadtxt("data/1802.06994.Darkside50.dat")
 #1105.5191
 damic_dat=np.loadtxt("data/damic.dat")
 #arXiv:1509.01515
@@ -367,7 +367,7 @@ cresstIIsurface=np.loadtxt("data/cresst_II_surface.csv",delimiter=',')
 cresstIIsurface_dat = zip(cresstIIsurface[:,0],cresstIIsurface[:,1]*1e-36)
 Direct_Det_Tab =[xenon10_dat,xenon100_dat1,xenon100_dat2,damic_dat,cressII2015_dat,SuperCDMS_dat,CDMSlite_dat,LUX_dat,cresstIIsurface_dat,cresstIII2017_dat,xenon1T_dat,xenon1T_S2_dat,darkside50_dat]
 
-Direct_Det_Func=[interp1d(np.array(tab)[:,0],np.array(tab)[:,1],bounds_error=False,fill_value=1e-25) for tab in Direct_Det_Tab]
+#Direct_Det_Func=[interp1d(np.array(tab)[:,0],np.array(tab)[:,1],bounds_error=False,fill_value=1e-25) for tab in Direct_Det_Tab]
 
 def Direct_Det(mx):
     return min([func(mx) for func in Direct_Det_Func])
